@@ -16,4 +16,5 @@ public class AdministratorEntity {
     @OneToOne
     @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
     private UserAccountEntity userAccount;
+    
 }
