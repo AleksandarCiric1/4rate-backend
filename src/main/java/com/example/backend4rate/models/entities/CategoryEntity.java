@@ -9,7 +9,6 @@ import lombok.Data;
 @Table(name = "category")
 @Entity
 public class CategoryEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
