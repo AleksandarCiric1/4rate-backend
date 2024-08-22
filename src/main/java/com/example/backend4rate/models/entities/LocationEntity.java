@@ -1,5 +1,7 @@
 package com.example.backend4rate.models.entities;
 
+import com.example.backend4rate.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,7 +9,7 @@ import lombok.Data;
 @Data
 @Table(name = "location")
 @Entity
-public class LocationEntity {
+public class LocationEntity implements BaseEntity<Integer>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

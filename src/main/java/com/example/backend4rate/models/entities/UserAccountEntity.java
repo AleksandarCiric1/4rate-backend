@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
 
+import com.example.backend4rate.base.BaseEntity;
+
 @Data
 @Table(name = "user_account")
 @Entity
-public class UserAccountEntity {
+public class UserAccountEntity implements BaseEntity<Integer>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

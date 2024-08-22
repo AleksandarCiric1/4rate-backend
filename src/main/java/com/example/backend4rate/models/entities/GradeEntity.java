@@ -1,12 +1,14 @@
 package com.example.backend4rate.models.entities;
 
+import com.example.backend4rate.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Table(name = "grade")
 @Entity
-public class GradeEntity {
+public class GradeEntity implements BaseEntity<Integer>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

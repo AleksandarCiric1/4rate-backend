@@ -3,13 +3,15 @@ package com.example.backend4rate.models.entities;
 import java.util.Date;
 import java.util.List;
 
+import com.example.backend4rate.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Table(name = "standard_user")
 @Entity
-public class StandardUserEntity {
+public class StandardUserEntity implements BaseEntity<Integer>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

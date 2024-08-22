@@ -1,12 +1,14 @@
 package com.example.backend4rate.models.entities;
 
+import com.example.backend4rate.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Table(name = "comment")
 @Entity
-public class CommentEntity {
+public class CommentEntity implements BaseEntity<Integer>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

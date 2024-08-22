@@ -2,13 +2,15 @@ package com.example.backend4rate.models.entities;
 
 import java.util.Date;
 
+import com.example.backend4rate.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Table(name = "monthly_report")
 @Entity
-public class MonthlyReportEntity {
+public class MonthlyReportEntity implements BaseEntity<Integer>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
