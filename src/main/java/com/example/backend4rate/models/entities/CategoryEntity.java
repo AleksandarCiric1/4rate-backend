@@ -24,5 +24,5 @@ public class CategoryEntity implements BaseEntity<Integer>{
     private List<CategorySubscriptionEntity> categorySubscriptions;
 
     @OneToMany(mappedBy = "category")
-    private List<RestaurantCateogryEntity> restaurantCategories;
+    private List<RestaurantCategoryEntity> restaurantCategories;
 }
