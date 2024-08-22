@@ -1,4 +1,4 @@
-package base;
+package com.example.backend4rate.base;
 
 import java.io.Serializable;
 
