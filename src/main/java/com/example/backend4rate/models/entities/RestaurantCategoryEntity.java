@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Table(name = "restaurant_category")
 @Entity
-public class RestaurantCateogryEntity implements BaseEntity<Integer>{
+public class RestaurantCategoryEntity implements BaseEntity<Integer>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
