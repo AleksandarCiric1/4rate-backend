@@ -26,4 +26,7 @@ public class ManagerEntity implements BaseEntity<Integer>{
     @OneToOne
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private RestaurantEntity restaurant;
+    
+    @OneToOne(mappedBy  = "manager")
+    private RequestForRestaurantEntity requestForRestaurant;
 }

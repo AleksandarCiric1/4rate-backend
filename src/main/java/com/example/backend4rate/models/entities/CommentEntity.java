@@ -26,6 +26,4 @@ public class CommentEntity implements BaseEntity<Integer>{
     @ManyToOne
     @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable = false)
     private StandardUserEntity standardUser;
-
-    
 }

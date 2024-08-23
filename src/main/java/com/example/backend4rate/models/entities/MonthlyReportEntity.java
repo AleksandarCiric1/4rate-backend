@@ -28,4 +28,6 @@ public class MonthlyReportEntity implements BaseEntity<Integer>{
     @ManyToOne
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private RestaurantEntity restaurant;
+
+   
 }

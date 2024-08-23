@@ -25,4 +25,5 @@ public class GradeEntity implements BaseEntity<Integer>{
     @ManyToOne
     @JoinColumn(name = "guest_id", referencedColumnName = "id", nullable = false)
     private GuestEntity guest;
+
 }

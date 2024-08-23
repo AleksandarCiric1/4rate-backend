@@ -21,4 +21,8 @@ public class RestaurantCategoryEntity implements BaseEntity<Integer>{
     @ManyToOne
     @JoinColumn(name = "resturant_id", referencedColumnName = "id", nullable = false)
     private RestaurantEntity restaurant;
+
+    @ManyToOne
+    @JoinColumn(name = "request_for_restaurant_id", referencedColumnName = "id")
+    private RequestForRestaurantEntity requestForRestaurant;
 }
