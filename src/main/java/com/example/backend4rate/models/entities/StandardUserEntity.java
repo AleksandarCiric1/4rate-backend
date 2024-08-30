@@ -37,7 +37,7 @@ public class StandardUserEntity implements BaseEntity<Integer>{
     @OneToOne(mappedBy = "standardUser")
     private GuestEntity guest;
 
-    @OneToOne(mappedBy = "standardUser")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "standardUser")
     private ManagerEntity manager;
 
     @OneToMany(mappedBy = "standardUser")

@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend4rate.exceptions.NotFoundException;
-import com.example.backend4rate.models.dto.UserAccount;
+import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.services.impl.UserAccountService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +20,7 @@ public class UserAccountController {
     }
 
     @PostMapping("/createAccount")
-    public UserAccount registerUser(@RequestBody UserAccount userAccount) throws NotFoundException{
-        return userAccountService.createManagerAccount(userAccount);
+    public StandardUser registerUser(@RequestBody StandardUser standardUser) throws NotFoundException{
+        return userAccountService.createManagerAccount(standardUser);
     }
 }

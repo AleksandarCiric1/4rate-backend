@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class StandardUser extends UserAccount{
-    private String name;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private Date dateOfBirth;
     private String contact;
 }

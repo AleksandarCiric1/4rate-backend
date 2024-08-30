@@ -46,6 +46,6 @@ public class UserAccountEntity implements BaseEntity<Integer>{
     @OneToOne(mappedBy = "userAccount")
     private AdministratorEntity administrator;
     
-    @OneToOne(mappedBy = "userAccount")
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private StandardUserEntity standardUser;
 }
