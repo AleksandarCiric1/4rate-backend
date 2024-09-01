@@ -5,7 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.example.backend4rate.models.entities.UserAccountEntity;
 
+
+
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccountEntity, Integer>{
-    
+    UserAccountEntity findByUsername(String username);
 }

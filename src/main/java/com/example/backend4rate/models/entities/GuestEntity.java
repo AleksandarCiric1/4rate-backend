@@ -18,7 +18,7 @@ public class GuestEntity implements BaseEntity<Integer>{
     private Integer id;
 
     @Basic
-    @Column(name = "contact", nullable = false)
+    @Column(name = "contact")
     private String contact;
 
     @OneToOne

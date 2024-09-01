@@ -16,7 +16,7 @@ public class ManagerEntity implements BaseEntity<Integer>{
     private Integer id;
 
     @Basic
-    @Column(name = "contact", nullable =  false)
+    @Column(name = "contact")
     private String contact;
 
     @OneToOne

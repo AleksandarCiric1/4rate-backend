@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.services.impl.UserAccountService;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/v1/admin")
@@ -25,6 +28,16 @@ public class AdministratorController {
     @DeleteMapping("/delete/{id}")
     public boolean deleteUserAccount(@PathVariable Integer id){
        return userAccountService.deleteUserAccount(id); 
+    }
+
+    @PutMapping("/suspend/{id}")
+    public boolean suspendUserAccount(@PathVariable Integer id) throws NotFoundException{
+        return userAccountService.suspendUserAccount(id);
+    }
+
+    @PutMapping("/unsuspend/{id}")
+    public boolean unsuspendUserAccount(@PathVariable Integer id)throws NotFoundException{
+        return userAccountService.unsuspendUserAccount(id);
     }
 
     @GetMapping

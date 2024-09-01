@@ -16,7 +16,7 @@ public class UserAccountEntity implements BaseEntity<Integer>{
     private Integer id;
 
     @Basic
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Basic
@@ -25,7 +25,7 @@ public class UserAccountEntity implements BaseEntity<Integer>{
 
     @Basic
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private String status;
     
     @Basic
     @Column(name = "role", nullable = false)

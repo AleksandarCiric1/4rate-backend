@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.UserAccount;
 
@@ -19,9 +20,11 @@ public interface UserAccountServiceInterface {
 
     boolean deleteUserAccount(Integer id);
 
-    boolean suspendUserAccount(Integer id);
+    boolean suspendUserAccount(Integer id)throws NotFoundException;
 
-    UserAccount createUserAccount(UserAccount standardUser) throws NotFoundException;
+    boolean unsuspendUserAccount(Integer id)throws NotFoundException;
 
-    boolean login(LoginUser loginUser);
+    UserAccount createUserAccount(UserAccount userAccount) throws NotFoundException;
+
+    UserAccount login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
 }

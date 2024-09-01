@@ -19,15 +19,15 @@ public class StandardUserEntity implements BaseEntity<Integer>{
     private Integer id;
 
     @Basic
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name")
     private String firstName;
 
     @Basic
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name")
     private String lastName;
 
     @Basic
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
     @OneToOne
