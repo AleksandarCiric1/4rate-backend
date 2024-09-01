@@ -2,9 +2,9 @@ package com.example.backend4rate.services;
 
 import java.util.List;
 
+
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.LoginUser;
-import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UserAccount;
 
 
@@ -21,7 +21,7 @@ public interface UserAccountServiceInterface {
 
     boolean suspendUserAccount(Integer id);
 
-    StandardUser createManagerAccount(StandardUser standardUser) throws NotFoundException;
+    UserAccount createUserAccount(UserAccount standardUser) throws NotFoundException;
 
     boolean login(LoginUser loginUser);
 }

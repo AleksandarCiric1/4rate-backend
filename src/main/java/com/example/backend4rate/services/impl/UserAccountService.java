@@ -78,25 +78,13 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     
     @Override
-    public StandardUser createManagerAccount(StandardUser standardUser) throws NotFoundException{
+    public UserAccount createUserAccount(UserAccount standardUser) throws NotFoundException{
         UserAccountEntity userAccountEntity = modelMapper.map(standardUser, UserAccountEntity.class);
         userAccountEntity.setId(null);
         userAccountEntity=userAccountRepository.saveAndFlush(userAccountEntity);
-        entityManager.refresh(userAccountEntity);
 
-        StandardUserEntity standardUserEntity = modelMapper.map(standardUser, StandardUserEntity.class);
-        standardUserEntity.setId(null);
-        standardUserEntity.setUserAccount(userAccountEntity);
-        standardUserEntity=standardUserRepository.saveAndFlush(standardUserEntity);
-        entityManager.refresh(standardUserEntity);
-
-        ManagerEntity managerEntity = modelMapper.map(standardUser, ManagerEntity.class);
-        managerEntity.setId(null);
-        managerEntity.setStandardUser(standardUserEntity);
-        managerEntity=managerRepository.saveAndFlush(managerEntity);
-        entityManager.refresh(managerEntity);
-        Optional<ManagerEntity> optionalManager = managerRepository.findById(managerEntity.getId());
-        return optionalManager.map(manager -> modelMapper.map(manager, StandardUser.class))
+        Optional<UserAccountEntity> optionalManager = userAccountRepository.findById(userAccountEntity.getId());
+        return optionalManager.map(manager -> modelMapper.map(manager, UserAccount.class))
                               .orElseThrow(() -> new NotFoundException());
     }
 
