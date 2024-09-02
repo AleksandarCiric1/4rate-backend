@@ -1,20 +1,19 @@
 package com.example.backend4rate.configs;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import io.micrometer.common.lang.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
-public class AppConfiguration implements WebMvcConfigurer {
+@RequiredArgsConstructor
+public class AppConfiguration  {
 
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry){
-        registry.addMapping("/**")
-        .allowedOrigins("http://localhot:5173")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        .allowedHeaders("*")
-        .allowCredentials(true);
+   @Bean
+    public ModelMapper modelMapper(){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        return modelMapper;
     }
 }
