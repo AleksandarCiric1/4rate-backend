@@ -7,13 +7,16 @@ import java.util.Date;
 
 
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
+import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.UserAccount;
+import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.entities.AdministratorEntity;
 import com.example.backend4rate.models.entities.GuestEntity;
 import com.example.backend4rate.models.entities.ManagerEntity;
@@ -52,12 +55,9 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public boolean updateInformation(UpdateInformation updateInformation) throws NotFoundException{
-        UserAccountEntity userAccountEntity = userAccountRepository.findByUsername(updateInformation.getUsername());
-        if(userAccountEntity == null){
-            throw new NotFoundException();
-        }
-        userAccountEntity.setUsername(updateInformation.getUsername());
+    public boolean updateInformation(UpdateInformation updateInformation, Integer id) throws NotFoundException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+       
         userAccountEntity.setAvatarUrl(updateInformation.getAvatarUrl());
         userAccountEntity.setEmail(updateInformation.getEmail());
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
@@ -84,25 +84,47 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public UserAccount getInformation(Integer id) throws NotFoundException{
-       return this.getUserAccountById(id);
+    public StandardUser getInformation(Integer id) throws NotFoundException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        StandardUser standardUser = new StandardUser();
+        standardUser.setUsername(userAccountEntity.getUsername());
+        standardUser.setPassword(userAccountEntity.getPassword());
+        standardUser.setRole(userAccountEntity.getRole());
+        standardUser.setEmail(userAccountEntity.getEmail());
+        standardUser.setAvatarUrl(userAccountEntity.getAvatarUrl());
+
+        StandardUserEntity standardUserEntity = standardUserRepository.findByUserAccount(userAccountEntity);
+        standardUser.setFirstName(standardUserEntity.getFirstName());
+        standardUser.setLastName(standardUserEntity.getLastName());
+        standardUser.setDateOfBirth(standardUserEntity.getDateOfBirth());
+
+        if("manager".equals(userAccountEntity.getRole())){
+            ManagerEntity managerEntity = managerRepository.findByStandardUser(standardUserRepository);
+            standardUser.setContact(managerEntity.getContact());
+        }
+        else if("guest".equals(userAccountEntity.getRole())){
+            GuestEntity guestEntity = guestRepository.findByStandardUser(standardUserEntity);
+            standardUser.setContact(guestEntity.getContact());
+        }
+        else{
+            throw new NotFoundException();
+        }
+        return standardUser;
     }
 
     @Override
-    public List<UserAccount> getAllUserAccount() {
-        return userAccountRepository.findAll().stream().map(l -> modelMapper.map(l, UserAccount.class)).collect(Collectors.toList());
+    public List<UserAccountResponse> getAllUserAccount() {
+        return userAccountRepository.findAll().stream().map(l -> modelMapper.map(l, UserAccountResponse.class)).collect(Collectors.toList());
     }
 
     @Override
-    public UserAccount getUserAccountById(Integer id) throws NotFoundException {
-        return modelMapper.map(userAccountRepository.findById(id).orElseThrow(NotFoundException::new), UserAccount.class);
+    public UserAccountResponse getUserAccountById(Integer id) throws NotFoundException {
+        return modelMapper.map(userAccountRepository.findById(id).orElseThrow(NotFoundException::new), UserAccountResponse.class);
     }
 
     @Override
-    public boolean deleteUserAccount(Integer id) {
+    public void deleteUserAccount(Integer id) throws EmptyResultDataAccessException{
         userAccountRepository.deleteById(id);
-        Optional<UserAccountEntity> deletedUserAccount = userAccountRepository.findById(id);
-        return deletedUserAccount.isEmpty();
     }
 
     @Override
@@ -128,7 +150,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     
     @Override
-    public UserAccount createUserAccount(UserAccount userAccount) throws NotFoundException{
+    public UserAccountResponse createUserAccount(UserAccount userAccount) throws NotFoundException{
         UserAccountEntity userAccountEntity = modelMapper.map(userAccount, UserAccountEntity.class);
         userAccountEntity.setId(null);
         userAccountEntity.setStatus("active");
@@ -161,16 +183,16 @@ public class UserAccountService implements UserAccountServiceInterface {
         }
 
         Optional<UserAccountEntity> optionalManager = userAccountRepository.findById(userAccountEntity.getId());
-        return optionalManager.map(manager -> modelMapper.map(manager, UserAccount.class))
+        return optionalManager.map(manager -> modelMapper.map(manager, UserAccountResponse.class))
                               .orElseThrow(() -> new NotFoundException());
     }
 
     @Override
-    public UserAccount login(LoginUser loginUser) throws NotFoundException, UnauthorizedException{
+    public UserAccountResponse login(LoginUser loginUser) throws NotFoundException, UnauthorizedException{
         UserAccountEntity userAccountEntity = userAccountRepository.findByUsername(loginUser.getUsername());
-        if(userAccountEntity != null){
+        if(userAccountEntity != null && "active".equals(userAccountEntity.getStatus())){
             if(userAccountEntity.getPassword().equals(loginUser.getPassword())){
-                return  modelMapper.map(userAccountEntity, UserAccount.class);
+                return  modelMapper.map(userAccountEntity, UserAccountResponse.class);
             }
             else{
                 throw new UnauthorizedException(); 

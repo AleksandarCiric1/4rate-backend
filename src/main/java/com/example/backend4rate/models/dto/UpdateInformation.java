@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class UpdateInformation {
-    private String username;
     private String avatarUrl;
     private String email;
     private String firstName;

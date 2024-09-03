@@ -2,30 +2,33 @@ package com.example.backend4rate.services;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
+import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.UserAccount;
+import com.example.backend4rate.models.dto.UserAccountResponse;
 
 
 public interface UserAccountServiceInterface {
-    boolean updateInformation(UpdateInformation updateInformation) throws NotFoundException;
+    boolean updateInformation(UpdateInformation updateInformation, Integer id) throws NotFoundException;
 
-    UserAccount getInformation(Integer id) throws NotFoundException;
+    StandardUser getInformation(Integer id) throws NotFoundException;
 
-    List<UserAccount> getAllUserAccount();
+    List<UserAccountResponse> getAllUserAccount();
 
-    UserAccount getUserAccountById(Integer id) throws NotFoundException;
+    UserAccountResponse getUserAccountById(Integer id) throws NotFoundException;
 
-    boolean deleteUserAccount(Integer id);
+    void deleteUserAccount(Integer id) throws EmptyResultDataAccessException;
 
     boolean suspendUserAccount(Integer id)throws NotFoundException;
 
     boolean unsuspendUserAccount(Integer id)throws NotFoundException;
 
-    UserAccount createUserAccount(UserAccount userAccount) throws NotFoundException;
+    UserAccountResponse createUserAccount(UserAccount userAccount) throws NotFoundException;
 
-    UserAccount login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
+    UserAccountResponse login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
 }

@@ -8,11 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.NotFoundException;
-import com.example.backend4rate.models.dto.UserAccount;
+import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.services.impl.UserAccountService;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -26,8 +27,8 @@ public class AdministratorController {
 
 
     @DeleteMapping("/delete/{id}")
-    public boolean deleteUserAccount(@PathVariable Integer id){
-       return userAccountService.deleteUserAccount(id); 
+    public void deleteUserAccount(@PathVariable Integer id) throws EmptyResultDataAccessException{
+       userAccountService.deleteUserAccount(id); 
     }
 
     @PutMapping("/suspend/{id}")
@@ -41,12 +42,12 @@ public class AdministratorController {
     }
 
     @GetMapping
-    public List<UserAccount> getAllUserAccounts(){
+    public List<UserAccountResponse> getAllUserAccounts(){
         return userAccountService.getAllUserAccount();
     }
 
     @GetMapping("/getById/{id}")
-    public UserAccount getUserAccountsById(@PathVariable Integer id) throws NotFoundException{
+    public UserAccountResponse getUserAccountsById(@PathVariable Integer id) throws NotFoundException{
         return userAccountService.getUserAccountById(id);
     }
 }
