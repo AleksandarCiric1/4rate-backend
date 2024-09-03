@@ -6,13 +6,14 @@ import java.util.List;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
+import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.UserAccount;
 
 
 public interface UserAccountServiceInterface {
-    boolean updateInformation(UserAccount userAccount);
+    boolean updateInformation(UpdateInformation updateInformation) throws NotFoundException;
 
-    UserAccount getInformation();
+    UserAccount getInformation(Integer id) throws NotFoundException;
 
     List<UserAccount> getAllUserAccount();
 

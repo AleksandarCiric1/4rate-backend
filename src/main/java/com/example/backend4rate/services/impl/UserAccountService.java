@@ -8,11 +8,11 @@ import java.util.Date;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
+import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.entities.AdministratorEntity;
 import com.example.backend4rate.models.entities.GuestEntity;
@@ -28,7 +28,7 @@ import com.example.backend4rate.services.UserAccountServiceInterface;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.security.auth.message.AuthException;
+
 
 
 @Service
@@ -52,15 +52,40 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public boolean updateInformation(UserAccount userAccount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInformation'");
+    public boolean updateInformation(UpdateInformation updateInformation) throws NotFoundException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findByUsername(updateInformation.getUsername());
+        if(userAccountEntity == null){
+            throw new NotFoundException();
+        }
+        userAccountEntity.setUsername(updateInformation.getUsername());
+        userAccountEntity.setAvatarUrl(updateInformation.getAvatarUrl());
+        userAccountEntity.setEmail(updateInformation.getEmail());
+        userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
+
+        if(!"administrator".equals(userAccountEntity.getRole())){
+            StandardUserEntity standardUserEntity = standardUserRepository.findByUserAccount(userAccountEntity);
+            standardUserEntity.setFirstName(updateInformation.getFirstName());
+            standardUserEntity.setLastName(updateInformation.getLastName());
+            standardUserEntity.setDateOfBirth(updateInformation.getDateOfBirth());
+            standardUserEntity = standardUserRepository.saveAndFlush(standardUserEntity);
+                if("manager".equals(userAccountEntity.getRole())){
+                    ManagerEntity managerEntity = managerRepository.findByStandardUser(standardUserRepository);
+                    managerEntity.setContact(updateInformation.getContact());
+                    managerEntity = managerRepository.saveAndFlush(managerEntity);
+                }
+                else{
+                    GuestEntity guestEntity = guestRepository.findByStandardUser(standardUserEntity);
+                    guestEntity.setContact(updateInformation.getContact());
+                    guestEntity = guestRepository.saveAndFlush(guestEntity);
+                }
+        }
+
+        return true;
     }
 
     @Override
-    public UserAccount getInformation() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInformation'");
+    public UserAccount getInformation(Integer id) throws NotFoundException{
+       return this.getUserAccountById(id);
     }
 
     @Override
