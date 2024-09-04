@@ -1,7 +1,6 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
-import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.entities.ManagerEntity;
 import com.example.backend4rate.models.entities.RequestForRestaurantEntity;
 import com.example.backend4rate.repositories.ManagerRepository;

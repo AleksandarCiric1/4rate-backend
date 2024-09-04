@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.backend4rate.models.entities.AdministratorEntity;
-import com.example.backend4rate.models.entities.UserAccountEntity;
 
 @Repository
 public interface AdministratorRepository extends JpaRepository<AdministratorEntity, Integer>{
