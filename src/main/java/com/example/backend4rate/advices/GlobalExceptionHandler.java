@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
+import com.example.backend4rate.exceptions.InvalidGradeException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 
@@ -29,6 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmptyResultDataAccessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidGradeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleInvalidGradeException(InvalidGradeException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
