@@ -43,7 +43,7 @@ public class CommentController {
     }
     
     @DeleteMapping("/delete/{commentId}")
-    public void deleteComment(@PathVariable Integer commentId) throws EmptyResultDataAccessException{
+    public void deleteComment(@PathVariable Integer commentId) {
         commentService.deleteCommentById(commentId);
     }
 }
