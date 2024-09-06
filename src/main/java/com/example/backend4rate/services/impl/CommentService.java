@@ -1,18 +1,16 @@
 package com.example.backend4rate.services.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Comment;
-import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.entities.CommentEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
-import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.CommentRepository;
 import com.example.backend4rate.repositories.GuestRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;

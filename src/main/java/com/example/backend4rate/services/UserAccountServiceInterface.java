@@ -22,7 +22,7 @@ public interface UserAccountServiceInterface {
 
     UserAccountResponse getUserAccountById(Integer id) throws NotFoundException;
 
-    void deleteUserAccount(Integer id) throws EmptyResultDataAccessException;
+    void deleteUserAccount(Integer id);
 
     boolean suspendUserAccount(Integer id)throws NotFoundException;
 
