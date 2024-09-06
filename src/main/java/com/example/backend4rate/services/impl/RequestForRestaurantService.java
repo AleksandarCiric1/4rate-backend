@@ -2,6 +2,7 @@ package com.example.backend4rate.services.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
-import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.entities.ManagerEntity;
 import com.example.backend4rate.models.entities.RequestForRestaurantEntity;
 import com.example.backend4rate.repositories.ManagerRepository;
@@ -59,14 +59,23 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public List<RequestForRestaurantResponse> getAllRequest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllRequest'");
+        return requestForRestaurantRepository.findAll().stream().map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
     }
 
     @Override
     public boolean cancelRequestForRestaurant(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cancelRequestForRestaurant'");
+        return this.deleteRequest(id);
+    }
+
+    private boolean deleteRequest(Integer id){
+        Optional<RequestForRestaurantEntity> requestOptional =  requestForRestaurantRepository.findById(id);
+        if(requestOptional.isPresent()){
+            requestForRestaurantRepository.deleteById(id);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
 }
