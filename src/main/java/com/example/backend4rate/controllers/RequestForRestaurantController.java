@@ -37,16 +37,27 @@ public class RequestForRestaurantController {
 
     @GetMapping("/getRequest/{id}")
     public RequestForRestaurantResponse getRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
-        return requestForRestaurantService.getRequest(id);
+        return requestForRestaurantService.getRequestForRestaurant(id);
     }
 
     @GetMapping("/getAllRequest")
-    public List<RequestForRestaurantResponse> getAllRequest(){
-        return requestForRestaurantService.getAllRequest();
+    public List<RequestForRestaurantResponse> getAllRequestForRestaurant(){
+        return requestForRestaurantService.getAllRequestForRestaurant();
     }
 
     @DeleteMapping("/cancelRequest/{id}")
     public boolean cancelRequestForRestaurant(@PathVariable Integer id){
        return requestForRestaurantService.cancelRequestForRestaurant(id);
     }
+
+    @DeleteMapping("/denyRequest/{id}")
+    public boolean denyRequestForRestaurant(@PathVariable Integer id){
+        return requestForRestaurantService.denyRequestForRestaurant(id);
+    }
+
+    @PostMapping("/approveRequest/{id}")
+    public void approveRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
+        requestForRestaurantService.approveRequestForRestaurant(id);
+    }
+    
 }

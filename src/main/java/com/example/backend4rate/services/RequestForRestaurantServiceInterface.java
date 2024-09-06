@@ -9,13 +9,13 @@ import java.util.List;
 public interface RequestForRestaurantServiceInterface {
     RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger) throws NotFoundException;
 
-    boolean approveRequest(Integer id);
+    void approveRequestForRestaurant(Integer id) throws NotFoundException;
 
-    boolean denyRequest(Integer id);
+    boolean denyRequestForRestaurant(Integer id);
 
-    RequestForRestaurantResponse getRequest(Integer id) throws NotFoundException;
+    RequestForRestaurantResponse getRequestForRestaurant(Integer id) throws NotFoundException;
 
-    List<RequestForRestaurantResponse> getAllRequest();
+    List<RequestForRestaurantResponse> getAllRequestForRestaurant();
 
     boolean cancelRequestForRestaurant(Integer id);
 }
