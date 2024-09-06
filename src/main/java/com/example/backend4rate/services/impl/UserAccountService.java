@@ -7,9 +7,10 @@ import java.util.Date;
 
 
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
@@ -42,16 +43,18 @@ public class UserAccountService implements UserAccountServiceInterface {
     private final AdministratorRepository administratorRepository;
     private final GuestRepository guestRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public UserAccountService(ModelMapper modelMapper, UserAccountRepository userAccountRepository, ManagerRepository managerRepository, StandardUserRepository standardUserRepository, AdministratorRepository administratorRepository, GuestRepository guestRepository){
+    public UserAccountService(ModelMapper modelMapper, UserAccountRepository userAccountRepository, ManagerRepository managerRepository, StandardUserRepository standardUserRepository, AdministratorRepository administratorRepository, GuestRepository guestRepository, PasswordEncoder passwordEncoder){
         this.userAccountRepository = userAccountRepository;
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.standardUserRepository = standardUserRepository;
         this.administratorRepository = administratorRepository;
         this.guestRepository = guestRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -112,6 +115,29 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
+    public UserAccountResponse createAdministratorAccount(UserAccount userAccount) throws NotFoundException, BadRequestException{
+        UserAccountEntity userAccountEntity = modelMapper.map(userAccount, UserAccountEntity.class);
+        userAccountEntity.setPassword(passwordEncoder.encode(userAccount.getPassword()));
+        userAccountEntity.setId(null);
+        userAccountEntity.setStatus("active");
+        userAccountEntity.setCreatedAt(new Date());
+        userAccountEntity=userAccountRepository.saveAndFlush(userAccountEntity);
+
+        if(userAccount.getRole().equals("administrator")){
+            AdministratorEntity administratorEntity = new AdministratorEntity();
+            administratorEntity.setUserAccount(userAccountEntity);
+            administratorEntity.setId(null);
+            administratorEntity=administratorRepository.saveAndFlush(administratorEntity);
+        }
+        else{
+            throw new BadRequestException();
+        }
+        Optional<UserAccountEntity> optionalManager = userAccountRepository.findById(userAccountEntity.getId());
+        return optionalManager.map(manager -> modelMapper.map(manager, UserAccountResponse.class))
+                              .orElseThrow(() -> new NotFoundException());
+    } 
+
+    @Override
     public List<UserAccountResponse> getAllUserAccount() {
         return userAccountRepository.findAll().stream().map(l -> modelMapper.map(l, UserAccountResponse.class)).collect(Collectors.toList());
     }
@@ -151,35 +177,29 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Override
     public UserAccountResponse createUserAccount(UserAccount userAccount) throws NotFoundException{
         UserAccountEntity userAccountEntity = modelMapper.map(userAccount, UserAccountEntity.class);
+        userAccountEntity.setPassword(passwordEncoder.encode(userAccount.getPassword()));
         userAccountEntity.setId(null);
         userAccountEntity.setStatus("active");
         userAccountEntity.setCreatedAt(new Date());
         userAccountEntity=userAccountRepository.saveAndFlush(userAccountEntity);
 
-        if(userAccount.getRole().equals("administrator")){
-            AdministratorEntity administratorEntity = new AdministratorEntity();
-            administratorEntity.setUserAccount(userAccountEntity);
-            administratorEntity.setId(null);
-            administratorEntity=administratorRepository.saveAndFlush(administratorEntity);
-        }
+        StandardUserEntity standardUserEntity = new StandardUserEntity();
+        standardUserEntity.setUserAccount(userAccountEntity);
+        standardUserEntity.setId(null);
+        standardUserEntity=standardUserRepository.saveAndFlush(standardUserEntity);
+        if(userAccount.getRole().equals("manager")){
+            ManagerEntity managerEntity = new ManagerEntity();
+            managerEntity.setStandardUser(standardUserEntity);
+            managerEntity.setId(null);
+            managerEntity=managerRepository.saveAndFlush(managerEntity);
+         } 
         else{
-            StandardUserEntity standardUserEntity = new StandardUserEntity();
-            standardUserEntity.setUserAccount(userAccountEntity);
-            standardUserEntity.setId(null);
-            standardUserEntity=standardUserRepository.saveAndFlush(standardUserEntity);
-            if(userAccount.getRole().equals("manager")){
-                ManagerEntity managerEntity = new ManagerEntity();
-                managerEntity.setStandardUser(standardUserEntity);
-                managerEntity.setId(null);
-                managerEntity=managerRepository.saveAndFlush(managerEntity);
-            } 
-            else{
-                GuestEntity guestEntity = new GuestEntity();
-                guestEntity.setStandardUser(standardUserEntity);
-                guestEntity.setId(null);
-                guestEntity=guestRepository.saveAndFlush(guestEntity);
-            }
+            GuestEntity guestEntity = new GuestEntity();
+            guestEntity.setStandardUser(standardUserEntity);
+            guestEntity.setId(null);
+            guestEntity=guestRepository.saveAndFlush(guestEntity);
         }
+    
 
         Optional<UserAccountEntity> optionalManager = userAccountRepository.findById(userAccountEntity.getId());
         return optionalManager.map(manager -> modelMapper.map(manager, UserAccountResponse.class))
@@ -190,7 +210,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     public UserAccountResponse login(LoginUser loginUser) throws NotFoundException, UnauthorizedException{
         UserAccountEntity userAccountEntity = userAccountRepository.findByUsername(loginUser.getUsername());
         if(userAccountEntity != null && "active".equals(userAccountEntity.getStatus())){
-            if(userAccountEntity.getPassword().equals(loginUser.getPassword())){
+            if(passwordEncoder.matches(loginUser.getPassword(), userAccountEntity.getPassword())){
                 return  modelMapper.map(userAccountEntity, UserAccountResponse.class);
             }
             else{

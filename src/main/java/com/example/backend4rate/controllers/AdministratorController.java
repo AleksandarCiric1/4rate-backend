@@ -8,9 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.BadRequestException;
+import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.services.impl.UserAccountService;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -47,5 +52,10 @@ public class AdministratorController {
     @GetMapping("/getById/{id}")
     public UserAccountResponse getUserAccountsById(@PathVariable Integer id) throws NotFoundException{
         return userAccountService.getUserAccountById(id);
+    }
+
+    @PostMapping("/createAdminAccount")
+    public UserAccountResponse createAdministratorAccount(@RequestBody UserAccount userAccount) throws NotFoundException, BadRequestException{
+        return userAccountService.createAdministratorAccount(userAccount);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
@@ -29,6 +30,8 @@ public interface UserAccountServiceInterface {
     boolean unsuspendUserAccount(Integer id)throws NotFoundException;
 
     UserAccountResponse createUserAccount(UserAccount userAccount) throws NotFoundException;
+
+    UserAccountResponse createAdministratorAccount(UserAccount userAccount) throws NotFoundException, BadRequestException;
 
     UserAccountResponse login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
 }

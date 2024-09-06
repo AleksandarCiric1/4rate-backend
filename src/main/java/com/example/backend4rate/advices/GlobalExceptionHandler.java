@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.InvalidGradeException;
@@ -44,5 +45,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleDuplicateReservationException(DuplicateReservationException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleBadRequestException(BadRequestException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

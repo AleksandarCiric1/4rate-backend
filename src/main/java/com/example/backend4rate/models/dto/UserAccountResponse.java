@@ -8,5 +8,4 @@ public class UserAccountResponse {
     private String username;
     private String role;
     private String email;
-    private String avatarUrl;
 }
