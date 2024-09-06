@@ -12,20 +12,24 @@ import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import com.example.backend4rate.models.entities.ManagerEntity;
 import com.example.backend4rate.models.entities.RequestForRestaurantEntity;
+import com.example.backend4rate.models.entities.RestaurantEntity;
 import com.example.backend4rate.repositories.ManagerRepository;
 import com.example.backend4rate.repositories.RequestForRestaurantRepository;
+import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.RequestForRestaurantServiceInterface;
 
 @Service
 public class RequestForRestaurantService implements RequestForRestaurantServiceInterface{
     private final RequestForRestaurantRepository requestForRestaurantRepository;
+    private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
 
-    public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository, ModelMapper modelMapper, ManagerRepository managerRepository){
+    public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository, ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository){
         this.requestForRestaurantRepository = requestForRestaurantRepository;
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Override
@@ -41,24 +45,31 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public boolean approveRequest(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'approveRequest'");
+    public void approveRequestForRestaurant(Integer id) throws NotFoundException{
+        RequestForRestaurantResponse request = this.getRequestForRestaurant(id);
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+
+        restaurantEntity.setName(request.getName());
+        restaurantEntity.setWorkTime(request.getWorkTime());
+        restaurantEntity.setDescription(request.getDescription());
+        restaurantEntity.setId(null);
+
+        restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
+        this.deleteRequest(id);
     }
 
     @Override
-    public boolean denyRequest(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'denyRequest'");
+    public boolean denyRequestForRestaurant(Integer id) {
+        return this.deleteRequest(id);
     }
 
     @Override
-    public RequestForRestaurantResponse getRequest(Integer id) throws NotFoundException{
+    public RequestForRestaurantResponse getRequestForRestaurant(Integer id) throws NotFoundException{
         return modelMapper.map(requestForRestaurantRepository.findById(id).orElseThrow(NotFoundException::new), RequestForRestaurantResponse.class);
     }
 
     @Override
-    public List<RequestForRestaurantResponse> getAllRequest() {
+    public List<RequestForRestaurantResponse> getAllRequestForRestaurant() {
         return requestForRestaurantRepository.findAll().stream().map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
     }
 
