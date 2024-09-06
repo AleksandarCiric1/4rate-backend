@@ -1,6 +1,8 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -57,14 +59,23 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public List<RequestForRestaurantResponse> getAllRequest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllRequest'");
+        return requestForRestaurantRepository.findAll().stream().map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
     }
 
     @Override
     public boolean cancelRequestForRestaurant(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cancelRequestForRestaurant'");
+        return this.deleteRequest(id);
+    }
+
+    private boolean deleteRequest(Integer id){
+        Optional<RequestForRestaurantEntity> requestOptional =  requestForRestaurantRepository.findById(id);
+        if(requestOptional.isPresent()){
+            requestForRestaurantRepository.deleteById(id);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
 }
