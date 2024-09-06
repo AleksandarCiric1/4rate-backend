@@ -91,7 +91,6 @@ public class UserAccountService implements UserAccountServiceInterface {
         standardUser.setPassword(userAccountEntity.getPassword());
         standardUser.setRole(userAccountEntity.getRole());
         standardUser.setEmail(userAccountEntity.getEmail());
-        standardUser.setAvatarUrl(userAccountEntity.getAvatarUrl());
 
         StandardUserEntity standardUserEntity = standardUserRepository.findByUserAccount(userAccountEntity);
         standardUser.setFirstName(standardUserEntity.getFirstName());

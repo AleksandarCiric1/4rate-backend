@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.services.impl.UserAccountService;

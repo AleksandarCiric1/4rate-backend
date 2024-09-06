@@ -6,7 +6,7 @@ import lombok.Data;
 public class UserAccount {
     private String username;
     private String password;
+    private String confirmPassword;
     private String role;
     private String email;
-    private String avatarUrl;
 }
