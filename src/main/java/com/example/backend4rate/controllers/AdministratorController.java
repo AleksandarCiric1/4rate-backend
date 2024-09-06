@@ -27,7 +27,7 @@ public class AdministratorController {
 
 
     @DeleteMapping("/delete/{id}")
-    public void deleteUserAccount(@PathVariable Integer id) throws EmptyResultDataAccessException{
+    public void deleteUserAccount(@PathVariable Integer id) {
        userAccountService.deleteUserAccount(id); 
     }
 

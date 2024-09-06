@@ -123,7 +123,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public void deleteUserAccount(Integer id) throws EmptyResultDataAccessException{
+    public void deleteUserAccount(Integer id){
         userAccountRepository.deleteById(id);
     }
 
