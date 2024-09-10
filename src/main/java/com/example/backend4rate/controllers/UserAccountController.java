@@ -7,14 +7,21 @@ import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
+import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.services.impl.UserAccountService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -47,4 +54,22 @@ public class UserAccountController {
     public boolean updateInformation(@RequestBody UpdateInformation updateInformation,@PathVariable Integer id) throws NotFoundException{
          return userAccountService.updateInformation(updateInformation, id);
     }
+
+    @GetMapping("/getAllAccounts")
+    public List<User> getAllAccounts() {
+        return userAccountService.getAllAccounts();
+    }
+    
+
+    @PostMapping("/confirmAccount")
+    public ResponseEntity<?> confirmAccount(@RequestParam Integer id) throws NotFoundException {
+        if (userAccountService.confirmAccount(id) != null){
+            return ResponseEntity.ok().build();
+        }
+        else{
+            return ResponseEntity.status(404).build();
+        }
+
+    }
+    
 }

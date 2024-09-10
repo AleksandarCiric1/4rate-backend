@@ -16,6 +16,7 @@ import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
+import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.entities.AdministratorEntity;
@@ -140,6 +141,27 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Override
     public List<UserAccountResponse> getAllUserAccount() {
         return userAccountRepository.findAll().stream().map(l -> modelMapper.map(l, UserAccountResponse.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getAllAccounts(){
+        return userAccountRepository.getAllAccounts();
+    }
+
+    @Override
+    public UserAccountEntity confirmAccount(Integer id) throws NotFoundException{
+        UserAccountEntity userAccountEntity = userAccountRepository.getUserAccountByStandardUserId(id);
+
+        if (userAccountEntity == null)
+            throw new NotFoundException(); 
+
+        if (!userAccountEntity.isConfirmed()){
+            userAccountEntity.setConfirmed(true);
+            userAccountRepository.save(userAccountEntity);
+
+            // TO DO send an email to user(email address should be valid)
+        }
+        return userAccountEntity;
     }
 
     @Override

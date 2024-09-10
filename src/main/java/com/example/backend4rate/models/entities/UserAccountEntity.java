@@ -28,6 +28,10 @@ public class UserAccountEntity implements BaseEntity<Integer>{
     private String status;
     
     @Basic
+    @Column(name = "confirmed", nullable = false)
+    private boolean confirmed;
+
+    @Basic
     @Column(name = "role", nullable = false)
     private String role;
 

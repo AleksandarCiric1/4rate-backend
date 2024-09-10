@@ -10,8 +10,10 @@ import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
+import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
+import com.example.backend4rate.models.entities.UserAccountEntity;
 
 
 public interface UserAccountServiceInterface {
@@ -20,6 +22,10 @@ public interface UserAccountServiceInterface {
     StandardUser getInformation(Integer id) throws NotFoundException;
 
     List<UserAccountResponse> getAllUserAccount();
+    
+    List<User> getAllAccounts();
+
+    UserAccountEntity confirmAccount(Integer id) throws NotFoundException;
 
     UserAccountResponse getUserAccountById(Integer id) throws NotFoundException;
 
