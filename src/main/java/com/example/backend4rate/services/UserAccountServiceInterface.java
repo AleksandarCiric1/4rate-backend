@@ -29,11 +29,11 @@ public interface UserAccountServiceInterface {
 
     UserAccountResponse getUserAccountById(Integer id) throws NotFoundException;
 
-    void deleteUserAccount(Integer id);
+    boolean blockUserAccount(Integer id) throws NotFoundException;
 
-    boolean suspendUserAccount(Integer id)throws NotFoundException;
+    boolean suspendUserAccount(Integer id)throws NotFoundException, BadRequestException;
 
-    boolean unsuspendUserAccount(Integer id)throws NotFoundException;
+    boolean unsuspendUserAccount(Integer id)throws NotFoundException, BadRequestException;
 
     UserAccountResponse createUserAccount(UserAccount userAccount) throws NotFoundException;
 

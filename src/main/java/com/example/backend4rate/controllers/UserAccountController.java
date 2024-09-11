@@ -60,16 +60,4 @@ public class UserAccountController {
         return userAccountService.getAllAccounts();
     }
     
-
-    @PostMapping("/confirmAccount")
-    public ResponseEntity<?> confirmAccount(@RequestParam Integer id) throws NotFoundException {
-        if (userAccountService.confirmAccount(id) != null){
-            return ResponseEntity.ok().build();
-        }
-        else{
-            return ResponseEntity.status(404).build();
-        }
-
-    }
-    
 }

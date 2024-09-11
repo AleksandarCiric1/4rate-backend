@@ -45,10 +45,11 @@ public class UserAccountService implements UserAccountServiceInterface {
     private final GuestRepository guestRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public UserAccountService(ModelMapper modelMapper, UserAccountRepository userAccountRepository, ManagerRepository managerRepository, StandardUserRepository standardUserRepository, AdministratorRepository administratorRepository, GuestRepository guestRepository, PasswordEncoder passwordEncoder){
+    public UserAccountService(ModelMapper modelMapper, UserAccountRepository userAccountRepository, ManagerRepository managerRepository, StandardUserRepository standardUserRepository, AdministratorRepository administratorRepository, GuestRepository guestRepository, PasswordEncoder passwordEncoder, EmailService emailService){
         this.userAccountRepository = userAccountRepository;
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
@@ -56,6 +57,7 @@ public class UserAccountService implements UserAccountServiceInterface {
         this.administratorRepository = administratorRepository;
         this.guestRepository = guestRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -122,6 +124,7 @@ public class UserAccountService implements UserAccountServiceInterface {
         userAccountEntity.setId(null);
         userAccountEntity.setStatus("active");
         userAccountEntity.setCreatedAt(new Date());
+        userAccountEntity.setConfirmed(false);
         userAccountEntity=userAccountRepository.saveAndFlush(userAccountEntity);
 
         if(userAccount.getRole().equals("administrator")){
@@ -159,7 +162,7 @@ public class UserAccountService implements UserAccountServiceInterface {
             userAccountEntity.setConfirmed(true);
             userAccountRepository.save(userAccountEntity);
 
-            // TO DO send an email to user(email address should be valid)
+            emailService.sendEmail(userAccountEntity.getEmail(), "4Rate Account", "Your account is active.");
         }
         return userAccountEntity;
     }
@@ -170,13 +173,22 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public void deleteUserAccount(Integer id){
-        userAccountRepository.deleteById(id);
+    public boolean blockUserAccount(Integer id) throws NotFoundException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        userAccountEntity.setStatus("block");
+        userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
+        if(userAccountEntity.getStatus().equals("block"))
+            return true;
+        else
+            return false;
     }
 
     @Override
-    public boolean suspendUserAccount(Integer id) throws NotFoundException {
+    public boolean suspendUserAccount(Integer id) throws NotFoundException, BadRequestException{
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        if("block".equals(userAccountEntity.getStatus())){
+            throw new BadRequestException();
+        }
         userAccountEntity.setStatus("suspended");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
         if(userAccountEntity.getStatus().equals("suspended"))
@@ -185,8 +197,11 @@ public class UserAccountService implements UserAccountServiceInterface {
             return false;
     }
 
-    public boolean unsuspendUserAccount(Integer id) throws NotFoundException {
+    public boolean unsuspendUserAccount(Integer id) throws NotFoundException, BadRequestException{
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        if("block".equals(userAccountEntity.getStatus())){
+            throw new BadRequestException();
+        }
         userAccountEntity.setStatus("active");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
         if(userAccountEntity.getStatus().equals("active"))
@@ -203,6 +218,7 @@ public class UserAccountService implements UserAccountServiceInterface {
         userAccountEntity.setId(null);
         userAccountEntity.setStatus("active");
         userAccountEntity.setCreatedAt(new Date());
+        userAccountEntity.setConfirmed(false);
         userAccountEntity=userAccountRepository.saveAndFlush(userAccountEntity);
 
         StandardUserEntity standardUserEntity = new StandardUserEntity();

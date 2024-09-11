@@ -2,10 +2,12 @@ package com.example.backend4rate.controllers;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.BadRequestException;
@@ -29,18 +31,18 @@ public class AdministratorController {
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteUserAccount(@PathVariable Integer id) {
-       userAccountService.deleteUserAccount(id); 
+    @PutMapping("/block/{id}")
+    public boolean blockUserAccount(@PathVariable Integer id) throws NotFoundException{
+       return userAccountService.blockUserAccount(id); 
     }
 
     @PutMapping("/suspend/{id}")
-    public boolean suspendUserAccount(@PathVariable Integer id) throws NotFoundException{
+    public boolean suspendUserAccount(@PathVariable Integer id) throws NotFoundException, BadRequestException{
         return userAccountService.suspendUserAccount(id);
     }
 
     @PutMapping("/unsuspend/{id}")
-    public boolean unsuspendUserAccount(@PathVariable Integer id)throws NotFoundException{
+    public boolean unsuspendUserAccount(@PathVariable Integer id)throws NotFoundException, BadRequestException{
         return userAccountService.unsuspendUserAccount(id);
     }
 
@@ -57,5 +59,16 @@ public class AdministratorController {
     @PostMapping("/createAdminAccount")
     public UserAccountResponse createAdministratorAccount(@RequestBody UserAccount userAccount) throws NotFoundException, BadRequestException{
         return userAccountService.createAdministratorAccount(userAccount);
+    }
+
+     @PostMapping("/confirmAccount")
+    public ResponseEntity<?> confirmAccount(@RequestParam Integer id) throws NotFoundException {
+        if (userAccountService.confirmAccount(id) != null){
+            return ResponseEntity.ok().build();
+        }
+        else{
+            return ResponseEntity.status(404).build();
+        }
+
     }
 }
