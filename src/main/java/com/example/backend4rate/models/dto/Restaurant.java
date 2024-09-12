@@ -9,8 +9,10 @@ public class Restaurant {
     private String name;
     private String description;
     private String workTime;
-    private List<String> phoneNumbers;  
-    private List<String> images;        
-    private List<String> categories;   
-    private double averageGrade;   
+    private String managerName;
+    private List<String> restaurantPhones;
+    private List<String> images;
+    private List<String> categories;
+    private List<String> comments; 
+    private Double averageGrade;   
 }
