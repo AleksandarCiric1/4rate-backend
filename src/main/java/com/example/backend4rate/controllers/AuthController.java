@@ -50,14 +50,6 @@ public class AuthController {
     public List<UserAccount> getAccount() {
         return this.authService.getAllUserAccounts();
     }
-
-
-
-    @GetMapping("/hello-man")
-    public String sayHello() {
-        this.imageService.doSomethingTest();
-        return "";
-    }
     
     
 }
