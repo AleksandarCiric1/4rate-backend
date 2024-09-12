@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.entities.ImageEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
+import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.ImageRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
+import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.services.ImageServiceInterface;
 
 @Service
@@ -29,14 +31,16 @@ public class ImageService implements ImageServiceInterface{
 
     private final ImageRepository imageRepository;
     private final RestaurantRepository restaurantRepository;
+    private final UserAccountRepository userAccountRepository;
 
-    public ImageService(ImageRepository imageRepository, RestaurantRepository restaurantRepository) {
+    public ImageService(ImageRepository imageRepository, RestaurantRepository restaurantRepository, UserAccountRepository userAccountRepository) {
         this.imageRepository = imageRepository;
         this.restaurantRepository = restaurantRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @Override
-     public void uploadImage(List<MultipartFile> imageFiles, Integer id) throws IOException, NotFoundException {
+    public void uploadImage(List<MultipartFile> imageFiles, Integer id) throws IOException, NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(id).orElseThrow(NotFoundException::new);
 
         for(MultipartFile imageFile : imageFiles){
@@ -69,5 +73,17 @@ public class ImageService implements ImageServiceInterface{
         }
         
         return nameOfImages;
+    }
+
+    public void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException {
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+
+        userAccountEntity.setAvatarUrl(uniqueFileName);
+        userAccountRepository.save(userAccountEntity);
+        
+        Path uploadPath = Path.of("avatars/");
+        Path filePath = uploadPath.resolve(uniqueFileName);
+        Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
     }
 }

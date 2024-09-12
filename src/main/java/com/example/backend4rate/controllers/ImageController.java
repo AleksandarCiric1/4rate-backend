@@ -35,4 +35,10 @@ public class ImageController {
     public List<String> getImages(@PathVariable Integer id) throws NullPointerException{
         return imageService.getImages(id);
      }
+
+     @PostMapping("/uploadAvatar/{id}")
+     public ResponseEntity<?> uploadAvatar(@PathVariable Integer id, @RequestParam("files") MultipartFile file) throws IOException, NotFoundException {
+         imageService.uploadAvatar(file ,id);
+         return  ResponseEntity.ok().build();
+     }
 }
