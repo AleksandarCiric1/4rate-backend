@@ -31,4 +31,13 @@ public class GuestEntity {
 
     @OneToMany(mappedBy = "guest")
     private List<GradeEntity> grades;
+
+    @ManyToMany
+    @JoinTable(
+        name = "guest_favorite_restaurants",
+        joinColumns = @JoinColumn(name = "guest_id"),
+        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+    )
+    private List<RestaurantEntity> favoriteRestaurants;
+    
 }
