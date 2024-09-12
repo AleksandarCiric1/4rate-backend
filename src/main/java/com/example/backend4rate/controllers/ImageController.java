@@ -41,4 +41,10 @@ public class ImageController {
          imageService.uploadAvatar(file ,id);
          return  ResponseEntity.ok().build();
      }
+
+     @GetMapping("/getAvatar/{id}")
+     public String getMethodName(@PathVariable Integer id) throws NotFoundException, NullPointerException {
+         return imageService.getAvatar(id);
+     }
+     
 }

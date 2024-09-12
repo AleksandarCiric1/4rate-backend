@@ -13,4 +13,6 @@ public interface ImageServiceInterface{
     public List<String> getImages(Integer id) throws NullPointerException;
 
     public void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
+
+    public String getAvatar(Integer id) throws NotFoundException, NullPointerException;
 }

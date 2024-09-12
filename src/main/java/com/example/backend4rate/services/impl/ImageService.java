@@ -86,4 +86,10 @@ public class ImageService implements ImageServiceInterface{
         Path filePath = uploadPath.resolve(uniqueFileName);
         Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
     }
+
+    public String getAvatar(Integer id) throws NotFoundException, NullPointerException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        return userAccountEntity.getAvatarUrl();
+
+    }
 }
