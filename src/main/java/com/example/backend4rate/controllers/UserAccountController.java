@@ -61,8 +61,8 @@ public class UserAccountController {
     }
     
 
-    @PostMapping("/confirmAccount")
-    public ResponseEntity<?> confirmAccount(@RequestParam Integer id) throws NotFoundException {
+    @PutMapping("/confirmAccount/{id}")
+    public ResponseEntity<?> confirmAccount(@PathVariable Integer id) throws NotFoundException {
         if (userAccountService.confirmAccount(id) != null){
             return ResponseEntity.ok().build();
         }
