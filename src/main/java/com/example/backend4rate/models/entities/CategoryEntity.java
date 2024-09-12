@@ -20,6 +20,10 @@ public class CategoryEntity implements BaseEntity<Integer>{
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Basic
+    @Column(name = "status", nullable = false)
+    private boolean status;
+
     @OneToMany(mappedBy = "category")
     private List<CategorySubscriptionEntity> categorySubscriptions;
 

@@ -60,4 +60,16 @@ public class UserAccountController {
         return userAccountService.getAllAccounts();
     }
     
+
+    @PutMapping("/confirmAccount/{id}")
+    public ResponseEntity<?> confirmAccount(@PathVariable Integer id) throws NotFoundException {
+        if (userAccountService.confirmAccount(id) != null){
+            return ResponseEntity.ok().build();
+        }
+        else{
+            return ResponseEntity.status(404).build();
+        }
+
+    }
+    
 }
