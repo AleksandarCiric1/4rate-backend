@@ -1,8 +1,11 @@
 package com.example.backend4rate.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.services.impl.ImageService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -36,15 +42,23 @@ public class ImageController {
         return imageService.getImages(id);
      }
 
-     @PostMapping("/uploadAvatar/{id}")
+     @PutMapping("/uploadAvatar/{id}")
      public ResponseEntity<?> uploadAvatar(@PathVariable Integer id, @RequestParam("files") MultipartFile file) throws IOException, NotFoundException {
          imageService.uploadAvatar(file ,id);
          return  ResponseEntity.ok().build();
      }
 
      @GetMapping("/getAvatar/{id}")
-     public String getMethodName(@PathVariable Integer id) throws NotFoundException, NullPointerException {
-         return imageService.getAvatar(id);
+     public ResponseEntity<Resource> getAvatar(@PathVariable Integer id) throws NotFoundException, MalformedURLException {
+        Resource resource = imageService.getAvatar(id);
+
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
      }
      
 }

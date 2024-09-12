@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,19 +79,34 @@ public class ImageService implements ImageServiceInterface{
 
     public void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        String avatar = userAccountEntity.getAvatarUrl();
+        if(avatar  != null){
+            String filePath = "src/main/resources/avatars/" + avatar;
+
+            Path path = Paths.get(filePath);
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                
+            }
+        }
+
         String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
 
         userAccountEntity.setAvatarUrl(uniqueFileName);
         userAccountRepository.save(userAccountEntity);
+
         
-        Path uploadPath = Path.of("avatars/");
+        Path uploadPath = Path.of("src/main/resources/avatars/");
         Path filePath = uploadPath.resolve(uniqueFileName);
         Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
     }
 
-    public String getAvatar(Integer id) throws NotFoundException, NullPointerException{
+    public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException{
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
-        return userAccountEntity.getAvatarUrl();
-
+        String avatar = userAccountEntity.getAvatarUrl();
+        Path path = Paths.get("src/main/resources/avatars/").resolve(avatar);
+        return new UrlResource(path.toUri());
     }
 }
