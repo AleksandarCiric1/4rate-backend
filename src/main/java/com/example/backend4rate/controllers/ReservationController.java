@@ -1,10 +1,8 @@
 package com.example.backend4rate.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.DeleteExchange;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
-import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Reservation;
 import com.example.backend4rate.services.impl.ReservationService;

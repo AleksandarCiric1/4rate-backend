@@ -9,6 +9,7 @@ public class Restaurant {
     private String name;
     private String description;
     private String workTime;
+    private String status;
     private List<String> phoneNumbers;  
     private List<String> images;        
     private List<String> categories;   

@@ -9,7 +9,6 @@ import com.example.backend4rate.services.CategoryServiceInterface;
 
 import java.util.List;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 @RestController
-@RequestMapping("/v1/category")
+@RequestMapping("/v1/categories")
 public class CategoryController {
 
     private final CategoryServiceInterface categoryService;

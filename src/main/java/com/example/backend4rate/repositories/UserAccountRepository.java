@@ -17,6 +17,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     public UserAccountEntity findByUsername(String username);
 
     // This query selects all users from user_account and standard_user table
+    // Possible change -> to get all users that are not blocked
     @Query("SELECT new com.example.backend4rate.models.dto.User(" +
            "su.id, ua.username, ua.role, ua.status, ua.confirmed as confirmed, ua.email, " +
            "ua.createdAt, ua.avatarUrl, su.dateOfBirth, su.firstName, su.lastName) " +
