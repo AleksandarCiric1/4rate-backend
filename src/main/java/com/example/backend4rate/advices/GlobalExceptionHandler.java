@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
+import com.example.backend4rate.exceptions.IOException;
 import com.example.backend4rate.exceptions.InvalidGradeException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
@@ -56,6 +57,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleNullPointerException(NullPointerException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleIOException(IOException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

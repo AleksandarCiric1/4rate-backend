@@ -3,6 +3,7 @@ package com.example.backend4rate.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -16,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.services.impl.ImageService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("v1/images")
 public class ImageController {
     private final ImageService imageService;
-
+    private final String pathToRestaurant = "src/main/resources/restorani/";
+    
     public ImageController(ImageService imageService){
         this.imageService = imageService;
     }
@@ -37,13 +41,24 @@ public class ImageController {
         return  ResponseEntity.ok().build();
     }
 
-    @GetMapping("/getImages/{id}")
-    public List<String> getImages(@PathVariable Integer id) throws NullPointerException{
-        return imageService.getImages(id);
+    @GetMapping("/getImages/{idRestaurant}")
+   public ResponseEntity<List<String>> getImageUrls(@PathVariable Integer idRestaurant) throws MalformedURLException{
+    List<Resource> resources = imageService.getImages(idRestaurant);
+    List<String> imageUrls = resources.stream()
+        .map(resource -> resource.getFilename()) // Assume filename is the URL or can be used to build URL
+        .map(filename -> pathToRestaurant  + idRestaurant + "/" + filename) // Build URL
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(imageUrls);
+    }
+
+    @DeleteMapping("/deleteImage/{id}")
+     public ResponseEntity<?> deleteImage(@PathVariable Integer id) throws NotFoundException, IOException{
+            imageService.deleteImage(id);
+            return ResponseEntity.ok().build();
      }
 
      @PutMapping("/uploadAvatar/{id}")
-     public ResponseEntity<?> uploadAvatar(@PathVariable Integer id, @RequestParam("files") MultipartFile file) throws IOException, NotFoundException {
+     public ResponseEntity<?> uploadAvatar(@PathVariable Integer id, @RequestParam("file") MultipartFile file) throws IOException, NotFoundException {
          imageService.uploadAvatar(file ,id);
          return  ResponseEntity.ok().build();
      }
@@ -52,13 +67,17 @@ public class ImageController {
      public ResponseEntity<Resource> getAvatar(@PathVariable Integer id) throws NotFoundException, MalformedURLException {
         Resource resource = imageService.getAvatar(id);
 
-        if (resource.exists() || resource.isReadable()) {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG)
-                    .body(resource);
+        if (resource.exists() && resource.isReadable()) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
         } else {
             return ResponseEntity.notFound().build();
         }
+     }
+
+     @DeleteMapping("/deleteAvatar/{id}")
+     public ResponseEntity<?> deleteAvatar(@PathVariable Integer id) throws NotFoundException, IOException{
+            imageService.deleteAvatar(id);
+            return ResponseEntity.ok().build();
      }
      
 }

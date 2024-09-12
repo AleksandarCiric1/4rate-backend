@@ -10,11 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.backend4rate.exceptions.NotFoundException;
 
 public interface ImageServiceInterface{
-    public void uploadImage(List<MultipartFile> imageFile, Integer id) throws IOException, NotFoundException;
+    void uploadImage(List<MultipartFile> imageFile, Integer id) throws IOException, NotFoundException;
 
-    public List<String> getImages(Integer id) throws NullPointerException;
+    List<Resource> getImages(Integer idRestaurant) throws MalformedURLException;
 
-    public void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
+    void deleteImage(Integer id)  throws NotFoundException, IOException;
 
-    public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException;
+    void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
+
+    Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException;
+
+    void deleteAvatar(Integer id)  throws NotFoundException, IOException;
 }
