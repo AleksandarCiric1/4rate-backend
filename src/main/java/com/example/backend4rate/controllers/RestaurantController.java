@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.backend4rate.models.dto.Restaurant;
 import com.example.backend4rate.services.impl.RestaurantService;
 
+
 @RestController
 @RequestMapping("/v1/restaurants")
 public class RestaurantController {
@@ -22,7 +23,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Integer id) {
+    public ResponseEntity<Restaurant> getRestaurant(@PathVariable Integer id) {
         try {
             Restaurant restaurant = restaurantService.getRestaurant(id);
             return ResponseEntity.ok(restaurant);
