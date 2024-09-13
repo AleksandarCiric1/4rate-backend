@@ -19,7 +19,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     private final GuestRepository guestRepository;
     private final ModelMapper modelMapper;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, GuestRepository guestRepository, ModelMapper modelMapper) {
+    public RestaurantService(RestaurantRepository restaurantRepository, GuestRepository guestRepository,ModelMapper modelMapper) {
         this.restaurantRepository = restaurantRepository;
         this.guestRepository = guestRepository;
         this.modelMapper = modelMapper;
@@ -28,10 +28,11 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public Restaurant addRestaurant(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
-        restaurantEntity.setId(null);  
-        RestaurantEntity savedEntity = restaurantRepository.save(restaurantEntity);
+        restaurantEntity.setId(null);
+        RestaurantEntity savedEntity = restaurantRepository.saveAndFlush(restaurantEntity);
         return modelMapper.map(savedEntity, Restaurant.class);
     }
+
 
     @Override
     public List<Restaurant> getAllRestaurants() {
