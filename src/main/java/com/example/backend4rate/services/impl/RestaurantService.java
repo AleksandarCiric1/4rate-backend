@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Restaurant;
 import com.example.backend4rate.models.entities.RestaurantEntity;
 import com.example.backend4rate.models.entities.GuestEntity;
@@ -40,15 +41,15 @@ public class RestaurantService implements RestaurantServiceInterface {
     }
 
     @Override
-    public Restaurant getRestaurant(int idRestaurant) {
-        RestaurantEntity restaurant = restaurantRepository.findById(idRestaurant)
-            .orElseThrow(() -> new RuntimeException("Restaurant not found with id: " + idRestaurant));
+    public Restaurant getRestaurant(Integer restaurantId) {
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
         return modelMapper.map(restaurant, Restaurant.class);
     }
 
     @Override
     public List<Restaurant> searchRestaurant(String name) {
-        return restaurantRepository.findByNameContaining(name).stream()
+        return restaurantRepository.findByNameContainingIgnoreCase(name).stream()
             .map(restaurant -> modelMapper.map(restaurant, Restaurant.class))
             .collect(Collectors.toList());
     }
@@ -56,42 +57,51 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public boolean updateRestaurantInformation(Restaurant restaurant) {
         RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
-        restaurantRepository.save(restaurantEntity);
+        restaurantRepository.saveAndFlush(restaurantEntity);
         return true;
     }
 
     @Override
-    public boolean addFavoriteRestaurant(int idRestaurant, int idGuest) {
-        GuestEntity guest = guestRepository.findById(idGuest)
-            .orElseThrow(() -> new RuntimeException("Guest not found with id: " + idGuest));
-        RestaurantEntity restaurant = restaurantRepository.findById(idRestaurant)
-            .orElseThrow(() -> new RuntimeException("Restaurant not found with id: " + idRestaurant));
+    public boolean addFavoriteRestaurant(Integer restaurantId, Integer guestId) {
+        GuestEntity guest = guestRepository.findById(guestId)
+            .orElseThrow(() -> new RuntimeException("Guest not found with id: " + guestId));
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
 
         guest.getFavoriteRestaurants().add(restaurant);  
-        guestRepository.save(guest);  
+        guestRepository.saveAndFlush(guest);  
         return true;
     }
 
     @Override
-    public boolean removeFavoriteRestaurant(int idRestaurant, int idGuest) {
-        GuestEntity guest = guestRepository.findById(idGuest)
-            .orElseThrow(() -> new RuntimeException("Guest not found with id: " + idGuest));
-        RestaurantEntity restaurant = restaurantRepository.findById(idRestaurant)
-            .orElseThrow(() -> new RuntimeException("Restaurant not found with id: " + idRestaurant));
+    public boolean removeFavoriteRestaurant(Integer restaurantId, Integer guestId) {
+        GuestEntity guest = guestRepository.findById(guestId)
+            .orElseThrow(() -> new RuntimeException("Guest not found with id: " + guestId));
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
 
         guest.getFavoriteRestaurants().remove(restaurant);  
-        guestRepository.save(guest);  
+        guestRepository.saveAndFlush(guest);  
         return true;
     }
 
     @Override
-    public List<Restaurant> getFavoriteRestaurants(int idGuest) {
-        GuestEntity guest = guestRepository.findById(idGuest)
-            .orElseThrow(() -> new RuntimeException("Guest not found with id: " + idGuest));
+    public List<Restaurant> getFavoriteRestaurants(Integer guestId) {
+        GuestEntity guest = guestRepository.findById(guestId)
+            .orElseThrow(() -> new NotFoundException("Guest not found with id: " + guestId));
 
         return guest.getFavoriteRestaurants().stream()
             .map(restaurant -> modelMapper.map(restaurant, Restaurant.class))
             .collect(Collectors.toList());
     }
+    
+    @Override
+    public List<Restaurant> getRestaurantsByCategories(List<Integer> categoryIds) {
+        List<RestaurantEntity> restaurantEntities = restaurantRepository.findByRestaurantCategoriesCategoryIdIn(categoryIds);
+        return restaurantEntities.stream()
+                .map(restaurantEntity -> modelMapper.map(restaurantEntity, Restaurant.class))
+                .collect(Collectors.toList());
+    }
+    
+    
 }
-
