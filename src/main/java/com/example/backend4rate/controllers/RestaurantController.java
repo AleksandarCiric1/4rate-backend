@@ -22,7 +22,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable int id) {
+    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Integer id) {
         try {
             Restaurant restaurant = restaurantService.getRestaurant(id);
             return ResponseEntity.ok(restaurant);
@@ -49,13 +49,13 @@ public class RestaurantController {
     }
 
     @PostMapping("/{id}/favorite/{guestId}")
-    public ResponseEntity<?> addFavoriteRestaurant(@PathVariable int id, @PathVariable int guestId) {
+    public ResponseEntity<?> addFavoriteRestaurant(@PathVariable Integer id, @PathVariable Integer guestId) {
         restaurantService.addFavoriteRestaurant(id, guestId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/favorite/{guestId}")
-    public ResponseEntity<?> removeFavoriteRestaurant(@PathVariable int id, @PathVariable int guestId) {
+    public ResponseEntity<?> removeFavoriteRestaurant(@PathVariable Integer id, @PathVariable Integer guestId) {
         restaurantService.removeFavoriteRestaurant(id, guestId);
         return ResponseEntity.ok().build();
     }
@@ -64,4 +64,10 @@ public class RestaurantController {
     public List<Restaurant> getFavoriteRestaurants(@PathVariable int guestId) {
         return restaurantService.getFavoriteRestaurants(guestId);
     }
+    
+    @GetMapping("/categories")
+    public List<Restaurant> getRestaurantsByCategories(@RequestParam List<Integer> categoryIds) {
+        return restaurantService.getRestaurantsByCategories(categoryIds);
+    }
+    
 }
