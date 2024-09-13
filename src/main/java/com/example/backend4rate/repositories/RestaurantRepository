@@ -7,6 +7,8 @@ import java.util.List;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<RestaurantEntity, Integer> {
-    List<RestaurantEntity> findByNameContaining(String name);  
+    List<RestaurantEntity> findByNameContainingIgnoreCase(String name);  
+ 
+    List<RestaurantEntity> findByRestaurantCategoriesCategoryIdIn(List<Integer> categoryIds);
+    
 }
-
