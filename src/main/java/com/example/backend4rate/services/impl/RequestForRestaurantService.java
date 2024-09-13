@@ -19,13 +19,14 @@ import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.RequestForRestaurantServiceInterface;
 
 @Service
-public class RequestForRestaurantService implements RequestForRestaurantServiceInterface{
+public class RequestForRestaurantService implements RequestForRestaurantServiceInterface {
     private final RequestForRestaurantRepository requestForRestaurantRepository;
     private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
 
-    public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository, ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository){
+    public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository,
+            ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository) {
         this.requestForRestaurantRepository = requestForRestaurantRepository;
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
@@ -33,19 +34,21 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerId) throws NotFoundException{
-        RequestForRestaurantEntity requestForRestaurantEntity = modelMapper.map(request, RequestForRestaurantEntity.class);
+    public RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerId)
+            throws NotFoundException {
+        RequestForRestaurantEntity requestForRestaurantEntity = modelMapper.map(request,
+                RequestForRestaurantEntity.class);
         requestForRestaurantEntity.setId(null);
 
         ManagerEntity managerEntity = managerRepository.findById(managerId).orElseThrow(NotFoundException::new);
         requestForRestaurantEntity.setManager(managerEntity);
         requestForRestaurantEntity = requestForRestaurantRepository.saveAndFlush(requestForRestaurantEntity);
 
-        return modelMapper.map(requestForRestaurantEntity, RequestForRestaurantResponse.class);     
+        return modelMapper.map(requestForRestaurantEntity, RequestForRestaurantResponse.class);
     }
 
     @Override
-    public void approveRequestForRestaurant(Integer id) throws NotFoundException{
+    public boolean approveRequestForRestaurant(Integer id) throws NotFoundException {
         RequestForRestaurantResponse request = this.getRequestForRestaurant(id);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
@@ -53,9 +56,15 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         restaurantEntity.setWorkTime(request.getWorkTime());
         restaurantEntity.setDescription(request.getDescription());
         restaurantEntity.setId(null);
+        restaurantEntity.setStatus("active");
+
+        if (!this.deleteRequest(id)) {
+            return false;
+        }
 
         restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
-        this.deleteRequest(id);
+
+        return true;
     }
 
     @Override
@@ -64,13 +73,15 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public RequestForRestaurantResponse getRequestForRestaurant(Integer id) throws NotFoundException{
-        return modelMapper.map(requestForRestaurantRepository.findById(id).orElseThrow(NotFoundException::new), RequestForRestaurantResponse.class);
+    public RequestForRestaurantResponse getRequestForRestaurant(Integer id) throws NotFoundException {
+        return modelMapper.map(requestForRestaurantRepository.findById(id).orElseThrow(NotFoundException::new),
+                RequestForRestaurantResponse.class);
     }
 
     @Override
     public List<RequestForRestaurantResponse> getAllRequestForRestaurant() {
-        return requestForRestaurantRepository.findAll().stream().map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
+        return requestForRestaurantRepository.findAll().stream()
+                .map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
     }
 
     @Override
@@ -78,15 +89,14 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         return this.deleteRequest(id);
     }
 
-    private boolean deleteRequest(Integer id){
-        Optional<RequestForRestaurantEntity> requestOptional =  requestForRestaurantRepository.findById(id);
-        if(requestOptional.isPresent()){
+    private boolean deleteRequest(Integer id) {
+        Optional<RequestForRestaurantEntity> requestOptional = requestForRestaurantRepository.findById(id);
+        if (requestOptional.isPresent()) {
             requestForRestaurantRepository.deleteById(id);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
-    
+
 }
