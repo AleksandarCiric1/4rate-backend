@@ -81,12 +81,19 @@ public class ImageService implements ImageServiceInterface{
         return resources;
     }
 
+    @Override 
+    public Resource getImage(Integer id, String imageName) throws NotFoundException, MalformedURLException{
+        String dir = pathToRestaurant + id;
+        Path path = Path.of(dir).resolve(imageName);
+        return new UrlResource(path.toUri());
+    }
+
     @Override
     public void deleteImage(Integer id) throws NotFoundException, IOException{
         ImageEntity imageEntity = imageRepository.findById(id).orElseThrow(NotFoundException::new);
         
-        String filePath = pathToRestaurant + imageEntity.getImageUrl();
-        Path path = Paths.get(filePath);
+        String filePath = pathToRestaurant + imageEntity.getRestaurant().getId()+ "/" + imageEntity.getImageUrl();
+        Path path = Path.of(filePath);
         try{
             Files.delete(path);
         }

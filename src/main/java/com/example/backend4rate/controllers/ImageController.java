@@ -51,6 +51,17 @@ public class ImageController {
     return ResponseEntity.ok(imageUrls);
     }
 
+    @GetMapping("/getImage/{id}/{imageName}")
+     public ResponseEntity<Resource> getAvatar(@PathVariable Integer id,@PathVariable String imageName) throws NotFoundException, MalformedURLException {
+        Resource resource = imageService.getImage(id, imageName);
+
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+     }
+
     @DeleteMapping("/deleteImage/{id}")
      public ResponseEntity<?> deleteImage(@PathVariable Integer id) throws NotFoundException, IOException{
             imageService.deleteImage(id);
@@ -67,7 +78,7 @@ public class ImageController {
      public ResponseEntity<Resource> getAvatar(@PathVariable Integer id) throws NotFoundException, MalformedURLException {
         Resource resource = imageService.getAvatar(id);
 
-        if (resource.exists() && resource.isReadable()) {
+        if (resource.exists() || resource.isReadable()) {
             return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
         } else {
             return ResponseEntity.notFound().build();

@@ -14,6 +14,8 @@ public interface ImageServiceInterface{
 
     List<Resource> getImages(Integer idRestaurant) throws MalformedURLException;
 
+    Resource getImage(Integer id, String imageName) throws NotFoundException, MalformedURLException;
+
     void deleteImage(Integer id)  throws NotFoundException, IOException;
 
     void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
