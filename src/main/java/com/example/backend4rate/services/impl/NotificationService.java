@@ -31,5 +31,13 @@ public class NotificationService implements NotificationServiceInterface {
         notificationRepository.save(notification);
     }
 
-
+    @Override
+    public void markAllAsRead(Integer guestId) {
+        List<NotificationEntity> notifications = notificationRepository.findByGuestIdAndStatus(guestId, false);
+        for (NotificationEntity notification : notifications) {
+            notification.setStatus(true);
+            notificationRepository.save(notification);
+        }
+    }
 }
+
