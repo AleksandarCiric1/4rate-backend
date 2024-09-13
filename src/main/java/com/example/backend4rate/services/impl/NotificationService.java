@@ -21,3 +21,15 @@ public class NotificationService implements NotificationServiceInterface {
     public List<NotificationEntity> getNotificationsForGuest(Integer guestId) {
         return notificationRepository.findByGuestId(guestId);
     }
+
+    @Override
+    public void markAsRead(Integer notificationId) {
+        NotificationEntity notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new NotFoundException("Notification not found"));
+        
+        notification.setStatus(true);  // Oznaka pročitano
+        notificationRepository.save(notification);
+    }
+
+
+}
