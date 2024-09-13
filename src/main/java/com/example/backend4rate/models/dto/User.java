@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class User {
     private Integer id;
+    private Integer userAccountId;
     private String username;
     private String role;
     private String status;

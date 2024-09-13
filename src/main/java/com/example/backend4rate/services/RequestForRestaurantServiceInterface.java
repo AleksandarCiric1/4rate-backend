@@ -7,9 +7,10 @@ import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import java.util.List;
 
 public interface RequestForRestaurantServiceInterface {
-    RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger) throws NotFoundException;
+    RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger)
+            throws NotFoundException;
 
-    void approveRequestForRestaurant(Integer id) throws NotFoundException;
+    boolean approveRequestForRestaurant(Integer id) throws NotFoundException;
 
     boolean denyRequestForRestaurant(Integer id);
 

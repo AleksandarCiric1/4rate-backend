@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Grade {
-
+public class Image {
     private Integer id;
-    private Integer value;
-    private Integer restaurantId;
-    private Integer guestId;
+    private String imageUrl;
 }

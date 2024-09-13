@@ -29,7 +29,7 @@ import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.services.ImageServiceInterface;
 
 @Service
-public class ImageService implements ImageServiceInterface{
+public class ImageService implements ImageServiceInterface {
 
     private final String pathToAvatar = "src/main/resources/avatars/";
     private final String pathToRestaurant = "src/main/resources/restaurants/";
@@ -37,7 +37,8 @@ public class ImageService implements ImageServiceInterface{
     private final RestaurantRepository restaurantRepository;
     private final UserAccountRepository userAccountRepository;
 
-    public ImageService(ImageRepository imageRepository, RestaurantRepository restaurantRepository, UserAccountRepository userAccountRepository) {
+    public ImageService(ImageRepository imageRepository, RestaurantRepository restaurantRepository,
+            UserAccountRepository userAccountRepository) {
         this.imageRepository = imageRepository;
         this.restaurantRepository = restaurantRepository;
         this.userAccountRepository = userAccountRepository;
@@ -47,7 +48,7 @@ public class ImageService implements ImageServiceInterface{
     public void uploadImage(List<MultipartFile> imageFiles, Integer id) throws IOException, NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(id).orElseThrow(NotFoundException::new);
 
-        for(MultipartFile imageFile : imageFiles){
+        for (MultipartFile imageFile : imageFiles) {
             String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
 
             ImageEntity imageEntity = new ImageEntity();
@@ -67,38 +68,38 @@ public class ImageService implements ImageServiceInterface{
     @Override
     public List<Resource> getImages(Integer idRestaurant) throws MalformedURLException {
         List<Resource> resources = new ArrayList<>();
-            
+
         File dir = new File(pathToRestaurant + idRestaurant);
         File[] images = dir.listFiles();
         List<Path> paths = new ArrayList<>();
 
-        for(File image : images){
+        for (File image : images) {
             paths.add(image.toPath());
         }
-        for(Path path : paths){
+        for (Path path : paths) {
             resources.add(new UrlResource(path.toUri()));
         }
         return resources;
     }
 
-    @Override 
-    public Resource getImage(Integer id, String imageName) throws NotFoundException, MalformedURLException{
+    @Override
+    public Resource getImage(Integer id, String imageName) throws NotFoundException, MalformedURLException {
         String dir = pathToRestaurant + id;
         Path path = Path.of(dir).resolve(imageName);
         return new UrlResource(path.toUri());
     }
 
     @Override
-    public void deleteImage(Integer id) throws NotFoundException, IOException{
+    public void deleteImage(Integer id) throws NotFoundException, IOException {
         ImageEntity imageEntity = imageRepository.findById(id).orElseThrow(NotFoundException::new);
-        
-        String filePath = pathToRestaurant + imageEntity.getRestaurant().getId()+ "/" + imageEntity.getImageUrl();
+
+        String filePath = pathToRestaurant + imageEntity.getRestaurant().getId() + "/" + imageEntity.getImageUrl();
         Path path = Path.of(filePath);
-        try{
+        try {
             Files.delete(path);
+        } catch (IOException ex) {
         }
-        catch(IOException ex){}
-        
+
         imageRepository.deleteById(id);
     }
 
@@ -107,7 +108,7 @@ public class ImageService implements ImageServiceInterface{
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
         String avatar = userAccountEntity.getAvatarUrl();
 
-        if(avatar != null){
+        if (avatar != null) {
             this.deleteAvatar(id);
         }
 
@@ -125,7 +126,7 @@ public class ImageService implements ImageServiceInterface{
     }
 
     @Override
-    public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException{
+    public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
         String avatar = userAccountEntity.getAvatarUrl();
         Path path = Paths.get(pathToAvatar).resolve(avatar);
@@ -133,17 +134,17 @@ public class ImageService implements ImageServiceInterface{
     }
 
     @Override
-    public void deleteAvatar(Integer id) throws NotFoundException, IOException{
+    public void deleteAvatar(Integer id) throws NotFoundException, IOException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
         String avatar = userAccountEntity.getAvatarUrl();
 
-        if(avatar != null){
+        if (avatar != null) {
             String filePath = pathToAvatar + avatar;
             Path path = Paths.get(filePath);
-            try{
+            try {
                 Files.delete(path);
+            } catch (IOException ex) {
             }
-            catch(IOException ex){}
         }
 
         userAccountEntity.setAvatarUrl(null);

@@ -12,51 +12,55 @@ import com.example.backend4rate.services.impl.RequestForRestaurantService;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
-
-
-
 
 @RestController
 @RequestMapping("/v1/requestForRestaurants")
 public class RequestForRestaurantController {
     private final RequestForRestaurantService requestForRestaurantService;
 
-    public RequestForRestaurantController(RequestForRestaurantService requestForRestaurantService){
+    public RequestForRestaurantController(RequestForRestaurantService requestForRestaurantService) {
         this.requestForRestaurantService = requestForRestaurantService;
     }
-    
+
     @PostMapping("/createRequest/{managerId}")
-     public RequestForRestaurantResponse createRequestForRestaurant(@RequestBody RequestForRestaurant requestForRestaurant,@PathVariable Integer managerId) throws NotFoundException{
+    public RequestForRestaurantResponse createRequestForRestaurant(
+            @RequestBody RequestForRestaurant requestForRestaurant, @PathVariable Integer managerId)
+            throws NotFoundException {
         return requestForRestaurantService.createRequestForRestaurant(requestForRestaurant, managerId);
     }
 
     @GetMapping("/getRequest/{id}")
-    public RequestForRestaurantResponse getRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
+    public RequestForRestaurantResponse getRequestForRestaurant(@PathVariable Integer id) throws NotFoundException {
         return requestForRestaurantService.getRequestForRestaurant(id);
     }
 
     @GetMapping("/getAllRequest")
-    public List<RequestForRestaurantResponse> getAllRequestForRestaurant(){
+    public List<RequestForRestaurantResponse> getAllRequestForRestaurant() {
         return requestForRestaurantService.getAllRequestForRestaurant();
     }
 
     @DeleteMapping("/cancelRequest/{id}")
-    public boolean cancelRequestForRestaurant(@PathVariable Integer id){
-       return requestForRestaurantService.cancelRequestForRestaurant(id);
+    public boolean cancelRequestForRestaurant(@PathVariable Integer id) {
+        return requestForRestaurantService.cancelRequestForRestaurant(id);
     }
 
-    @DeleteMapping("/denyRequest/{id}")
-    public boolean denyRequestForRestaurant(@PathVariable Integer id){
+    @PutMapping("/denyRequest/{id}")
+    public boolean denyRequestForRestaurant(@PathVariable Integer id) {
         return requestForRestaurantService.denyRequestForRestaurant(id);
     }
 
-    @PostMapping("/approveRequest/{id}")
-    public void approveRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
-        requestForRestaurantService.approveRequestForRestaurant(id);
+    @PutMapping("/approveRequest/{id}")
+    public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer id) throws NotFoundException {
+        if (requestForRestaurantService.approveRequestForRestaurant(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
-    
+
 }
