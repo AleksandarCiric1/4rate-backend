@@ -5,6 +5,8 @@ import java.util.List;
 
 public interface NotificationServiceInterface {
 
-  
+    List<NotificationEntity> getNotificationsForGuest(Integer guestId);
+    void markAsRead(Integer notificationId);
+    void markAllAsRead(Integer guestId);
 }
 
