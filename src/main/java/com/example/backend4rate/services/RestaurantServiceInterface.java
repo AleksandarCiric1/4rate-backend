@@ -5,11 +5,12 @@ import java.util.List;
 
 public interface RestaurantServiceInterface {
     List<Restaurant> getAllRestaurants();  
-    Restaurant getRestaurant(int idRestaurant); 
+    Restaurant getRestaurant(Integer restaurantId); 
     List<Restaurant> searchRestaurant(String name);  
     boolean updateRestaurantInformation(Restaurant restaurant);  
     Restaurant addRestaurant(Restaurant restaurant);  
-    boolean addFavoriteRestaurant(int idRestaurant, int idGuest);  
-    boolean removeFavoriteRestaurant(int idRestaurant, int idGuest);  
-    List<Restaurant> getFavoriteRestaurants(int idGuest); 
+    boolean addFavoriteRestaurant(Integer restaurantId, Integer guestId);  
+    boolean removeFavoriteRestaurant(Integer restaurantId, Integer guestId);  
+    List<Restaurant> getFavoriteRestaurants(Integer guestId); 
+    List<Restaurant> getRestaurantsByCategories(List<Integer> categoryIds);
 }
