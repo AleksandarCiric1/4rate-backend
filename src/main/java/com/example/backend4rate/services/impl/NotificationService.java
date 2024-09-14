@@ -39,5 +39,9 @@ public class NotificationService implements NotificationServiceInterface {
             notificationRepository.save(notification);
         }
     }
+    
+    @Override
+    public void saveNotification(NotificationEntity notification) {
+        notificationRepository.save(notification);
+    }
 }
-
