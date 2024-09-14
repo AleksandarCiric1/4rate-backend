@@ -6,6 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend4rate.models.dto.Restaurant;
 import com.example.backend4rate.services.impl.RestaurantService;
+import com.example.backend4rate.exceptions.InvalidPhoneNumberException;
+import com.example.backend4rate.exceptions.DuplicatePhoneNumberException;
+import com.example.backend4rate.exceptions.RestaurantNotFoundException;
+import com.example.backend4rate.exceptions.GuestNotFoundException;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -19,8 +29,9 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantService.getAllRestaurants();
+    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+        return ResponseEntity.ok(restaurants);
     }
 
     @GetMapping("/{id}")
@@ -28,53 +39,75 @@ public class RestaurantController {
         try {
             Restaurant restaurant = restaurantService.getRestaurant(id);
             return ResponseEntity.ok(restaurant);
-        } catch (Exception e) {
+        } catch (RestaurantNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/create")
     public ResponseEntity<Restaurant> createRestaurant(@RequestBody Restaurant restaurant) {
-        Restaurant createdRestaurant = restaurantService.addRestaurant(restaurant);
-        return ResponseEntity.ok(createdRestaurant);
+        try {
+            Restaurant createdRestaurant = restaurantService.addRestaurant(restaurant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdRestaurant);
+        } catch (InvalidPhoneNumberException | DuplicatePhoneNumberException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateRestaurant(@PathVariable Integer id, @RequestBody Restaurant restaurant) {
         restaurant.setId(id);
-        boolean updated = restaurantService.updateRestaurantInformation(restaurant);
-        if (updated) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            boolean updated = restaurantService.updateRestaurantInformation(restaurant);
+            if (updated) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (InvalidPhoneNumberException | DuplicatePhoneNumberException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/search")
-    public List<Restaurant> searchRestaurants(@RequestParam String name) {
-        return restaurantService.searchRestaurant(name);
+    public ResponseEntity<List<Restaurant>> searchRestaurants(@RequestParam String name) {
+        List<Restaurant> restaurants = restaurantService.searchRestaurant(name);
+        return ResponseEntity.ok(restaurants);
     }
 
     @PostMapping("/{id}/favorite/{guestId}")
     public ResponseEntity<?> addFavoriteRestaurant(@PathVariable Integer id, @PathVariable Integer guestId) {
-        restaurantService.addFavoriteRestaurant(id, guestId);
-        return ResponseEntity.ok().build();
+        try {
+            restaurantService.addFavoriteRestaurant(id, guestId);
+            return ResponseEntity.ok().build();
+        } catch (RestaurantNotFoundException | GuestNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @DeleteMapping("/{id}/favorite/{guestId}")
     public ResponseEntity<?> removeFavoriteRestaurant(@PathVariable Integer id, @PathVariable Integer guestId) {
-        restaurantService.removeFavoriteRestaurant(id, guestId);
-        return ResponseEntity.ok().build();
+        try {
+            restaurantService.removeFavoriteRestaurant(id, guestId);
+            return ResponseEntity.ok().build();
+        } catch (RestaurantNotFoundException | GuestNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping("/favorites/{guestId}")
-    public List<Restaurant> getFavoriteRestaurants(@PathVariable int guestId) {
-        return restaurantService.getFavoriteRestaurants(guestId);
+    public ResponseEntity<List<Restaurant>> getFavoriteRestaurants(@PathVariable int guestId) {
+        try {
+            List<Restaurant> favoriteRestaurants = restaurantService.getFavoriteRestaurants(guestId);
+            return ResponseEntity.ok(favoriteRestaurants);
+        } catch (GuestNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
     
     @GetMapping("/categories")
-    public List<Restaurant> getRestaurantsByCategories(@RequestParam List<Integer> categoryIds) {
-        return restaurantService.getRestaurantsByCategories(categoryIds);
+    public ResponseEntity<List<Restaurant>> getRestaurantsByCategories(@RequestParam List<Integer> categoryIds) {
+        List<Restaurant> restaurants = restaurantService.getRestaurantsByCategories(categoryIds);
+        return ResponseEntity.ok(restaurants);
     }
-    
 }
