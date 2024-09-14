@@ -5,7 +5,7 @@ public class RestaurantNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public NotFoundException() {
+    public RestaurantNotFoundException() {
         super("Restaurant not found");
     }
 }
