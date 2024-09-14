@@ -5,6 +5,9 @@ import com.example.backend4rate.models.dto.Restaurant;
 import com.example.backend4rate.models.entities.*;
 import com.example.backend4rate.repositories.CategorySubscriptionRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
+import com.example.backend4rate.models.entities.RestaurantEntity;
+import com.example.backend4rate.models.entities.RestaurantPhoneEntity;
+import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.GuestRepository;
 import com.example.backend4rate.services.EmailServiceInterface;
 import com.example.backend4rate.services.NotificationServiceInterface;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,7 @@ public class RestaurantService implements RestaurantServiceInterface {
 
     private final RestaurantRepository restaurantRepository;
     private final GuestRepository guestRepository;
+    private final RestaurantPhoneRepository restaurantPhoneRepository;
     private final CategorySubscriptionRepository categorySubscriptionRepository;
     private final NotificationServiceInterface notificationService;
     private final EmailServiceInterface emailService;
@@ -32,13 +37,63 @@ public class RestaurantService implements RestaurantServiceInterface {
                              CategorySubscriptionRepository categorySubscriptionRepository,
                              NotificationServiceInterface notificationService,
                              EmailServiceInterface emailService,
+                             RestaurantPhoneRepository restaurantPhoneRepository,
                              ModelMapper modelMapper) {
         this.restaurantRepository = restaurantRepository;
         this.guestRepository = guestRepository;
         this.categorySubscriptionRepository = categorySubscriptionRepository;
         this.notificationService = notificationService;
         this.emailService = emailService;
+        this.restaurantPhoneRepository = restaurantPhoneRepository;
         this.modelMapper = modelMapper;
+    }
+    
+    @Override
+    public boolean updateRestaurantInformation(Restaurant restaurant) {
+        RestaurantEntity existingRestaurant = restaurantRepository.findById(restaurant.getId())
+                .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurant.getId()));
+
+        existingRestaurant.setName(restaurant.getName());
+        existingRestaurant.setDescription(restaurant.getDescription());
+        existingRestaurant.setWorkTime(restaurant.getWorkTime());
+
+        restaurantRepository.saveAndFlush(existingRestaurant);
+
+        updateRestaurantPhones(existingRestaurant, restaurant.getRestaurantPhones());
+
+        return true;
+    }
+
+    private void updateRestaurantPhones(RestaurantEntity restaurantEntity, List<String> updatedPhones) {
+        List<RestaurantPhoneEntity> existingPhones = restaurantPhoneRepository.findByRestaurant(restaurantEntity);
+
+        List<String> updatedPhoneList = new ArrayList<>(updatedPhones);
+
+        // determine which phones to delete
+        List<RestaurantPhoneEntity> phonesToDelete = existingPhones.stream()
+                .filter(phone -> !updatedPhoneList.contains(phone.getPhone()))
+                .collect(Collectors.toList());
+
+        for (RestaurantPhoneEntity phoneToDelete : phonesToDelete) {
+            restaurantPhoneRepository.delete(phoneToDelete);
+        }
+
+        // determine which phones to add
+        List<String> existingPhoneList = existingPhones.stream()
+                .map(RestaurantPhoneEntity::getPhone)
+                .collect(Collectors.toList());
+
+        List<String> phonesToAdd = updatedPhones.stream()
+                .filter(phone -> !existingPhoneList.contains(phone))
+                .collect(Collectors.toList());
+
+        // add new phones
+        for (String phone : phonesToAdd) {
+            RestaurantPhoneEntity phoneEntity = new RestaurantPhoneEntity();
+            phoneEntity.setPhone(phone);
+            phoneEntity.setRestaurant(restaurantEntity);
+            restaurantPhoneRepository.save(phoneEntity);
+        }
     }
 
     @Override
@@ -73,12 +128,7 @@ public class RestaurantService implements RestaurantServiceInterface {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public boolean updateRestaurantInformation(Restaurant restaurant) {
-        RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
-        restaurantRepository.saveAndFlush(restaurantEntity);
-        return true;
-    }
+
 
     @Override
     public boolean addFavoriteRestaurant(Integer restaurantId, Integer guestId) {
@@ -139,9 +189,11 @@ public class RestaurantService implements RestaurantServiceInterface {
                         .map(StandardUserEntity::getUserAccount)
                         .map(UserAccountEntity::getEmail)
                         .ifPresent(email -> {
+                            // Prepare notification
                             String subject = "New Restaurant Added!";
                             String body = "A new restaurant, " + restaurantEntity.getName() + ", has been added to the category: " + category.getName();
 
+                            // Send email
                             emailService.sendEmail(email, subject, body);
 
                             // Save notification
@@ -156,3 +208,4 @@ public class RestaurantService implements RestaurantServiceInterface {
         }
     }
 }
+
