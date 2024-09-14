@@ -6,6 +6,6 @@ public class CategoryNotFoundException extends RuntimeException {
     }
 
     public NotFoundException() {
-        super("UserAccount is not found");
+        super("Category is not found");
     }
 }
