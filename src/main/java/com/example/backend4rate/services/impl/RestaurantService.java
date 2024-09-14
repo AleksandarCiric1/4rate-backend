@@ -1,12 +1,13 @@
 package com.example.backend4rate.services.impl;
 
-import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.RestaurantNotFoundException;
+import com.example.backend4rate.exceptions.DuplicatePhoneNumberException;
+import com.example.backend4rate.exceptions.InvalidPhoneNumberException;
+import com.example.backend4rate.exceptions.GuestNotFoundException;
 import com.example.backend4rate.models.dto.Restaurant;
 import com.example.backend4rate.models.entities.*;
 import com.example.backend4rate.repositories.CategorySubscriptionRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
-import com.example.backend4rate.models.entities.RestaurantEntity;
-import com.example.backend4rate.models.entities.RestaurantPhoneEntity;
 import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.GuestRepository;
 import com.example.backend4rate.services.EmailServiceInterface;
@@ -19,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,19 +50,60 @@ public class RestaurantService implements RestaurantServiceInterface {
         this.restaurantPhoneRepository = restaurantPhoneRepository;
         this.modelMapper = modelMapper;
     }
+
+
+    @Override
+    public Restaurant addRestaurant(Restaurant restaurant) throws InvalidPhoneNumberException, DuplicatePhoneNumberException {
+        RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
+        restaurantEntity.setId(null); 
+        RestaurantEntity savedEntity = restaurantRepository.saveAndFlush(restaurantEntity);
+
+        validatePhoneNumbers(restaurant.getRestaurantPhones());
+
+        for (String phone : restaurant.getRestaurantPhones()) {
+            RestaurantPhoneEntity phoneEntity = new RestaurantPhoneEntity();
+            phoneEntity.setPhone(phone);
+            phoneEntity.setRestaurant(savedEntity);
+            restaurantPhoneRepository.save(phoneEntity);
+        }
+
+        notifySubscribers(savedEntity); // Notify subscribers when a new restaurant is added to the category they are subscribed to
+
+        return modelMapper.map(savedEntity, Restaurant.class);
+    }
+
+    private void validatePhoneNumbers(List<String> phones) throws InvalidPhoneNumberException, DuplicatePhoneNumberException {
+        for (String phone : phones) {
+            if (!isValidPhoneNumber(phone)) {
+                throw new InvalidPhoneNumberException("Invalid phone number: " + phone);
+            }
+        }
+
+        Set<String> phoneSet = new HashSet<>();
+        for (String phone : phones) {
+            if (!phoneSet.add(phone)) {
+                throw new DuplicatePhoneNumberException("Duplicate phone number found: " + phone);
+            }
+        }
+    }
+
+    private boolean isValidPhoneNumber(String phone) {
+        return phone.matches("^[+]?\\d[-\\d]*$");
+    }
     
     @Override
-    public boolean updateRestaurantInformation(Restaurant restaurant) {
+    public boolean updateRestaurantInformation(Restaurant restaurant) throws InvalidPhoneNumberException, DuplicatePhoneNumberException {
         RestaurantEntity existingRestaurant = restaurantRepository.findById(restaurant.getId())
-                .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurant.getId()));
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurant.getId()));
 
         existingRestaurant.setName(restaurant.getName());
         existingRestaurant.setDescription(restaurant.getDescription());
         existingRestaurant.setWorkTime(restaurant.getWorkTime());
 
-        restaurantRepository.saveAndFlush(existingRestaurant);
-
+        validatePhoneNumbers(restaurant.getRestaurantPhones());
         updateRestaurantPhones(existingRestaurant, restaurant.getRestaurantPhones());
+
+        restaurantRepository.saveAndFlush(existingRestaurant);
 
         return true;
     }
@@ -69,7 +113,6 @@ public class RestaurantService implements RestaurantServiceInterface {
 
         List<String> updatedPhoneList = new ArrayList<>(updatedPhones);
 
-        // determine which phones to delete
         List<RestaurantPhoneEntity> phonesToDelete = existingPhones.stream()
                 .filter(phone -> !updatedPhoneList.contains(phone.getPhone()))
                 .collect(Collectors.toList());
@@ -78,7 +121,6 @@ public class RestaurantService implements RestaurantServiceInterface {
             restaurantPhoneRepository.delete(phoneToDelete);
         }
 
-        // determine which phones to add
         List<String> existingPhoneList = existingPhones.stream()
                 .map(RestaurantPhoneEntity::getPhone)
                 .collect(Collectors.toList());
@@ -87,24 +129,12 @@ public class RestaurantService implements RestaurantServiceInterface {
                 .filter(phone -> !existingPhoneList.contains(phone))
                 .collect(Collectors.toList());
 
-        // add new phones
         for (String phone : phonesToAdd) {
             RestaurantPhoneEntity phoneEntity = new RestaurantPhoneEntity();
             phoneEntity.setPhone(phone);
             phoneEntity.setRestaurant(restaurantEntity);
             restaurantPhoneRepository.save(phoneEntity);
         }
-    }
-
-    @Override
-    public Restaurant addRestaurant(Restaurant restaurant) {
-        RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
-        restaurantEntity.setId(null); 
-        RestaurantEntity savedEntity = restaurantRepository.saveAndFlush(restaurantEntity);
-
-        notifySubscribers(savedEntity); // Notify subscribers about the new restaurant
-
-        return modelMapper.map(savedEntity, Restaurant.class);
     }
 
     @Override
@@ -117,7 +147,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public Restaurant getRestaurant(Integer restaurantId) {
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
         return modelMapper.map(restaurant, Restaurant.class);
     }
 
@@ -128,14 +158,12 @@ public class RestaurantService implements RestaurantServiceInterface {
                 .collect(Collectors.toList());
     }
 
-
-
     @Override
     public boolean addFavoriteRestaurant(Integer restaurantId, Integer guestId) {
         GuestEntity guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new RuntimeException("Guest not found with id: " + guestId));
+                .orElseThrow(() -> new GuestNotFoundException("Guest not found with id: " + guestId));
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
 
         guest.getFavoriteRestaurants().add(restaurant);
         guestRepository.saveAndFlush(guest);
@@ -145,9 +173,9 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public boolean removeFavoriteRestaurant(Integer restaurantId, Integer guestId) {
         GuestEntity guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new RuntimeException("Guest not found with id: " + guestId));
+                .orElseThrow(() -> new GuestNotFoundException("Guest not found with id: " + guestId));
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException("Restaurant not found with id: " + restaurantId));
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
 
         guest.getFavoriteRestaurants().remove(restaurant);
         guestRepository.saveAndFlush(guest);
@@ -157,7 +185,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public List<Restaurant> getFavoriteRestaurants(Integer guestId) {
         GuestEntity guest = guestRepository.findById(guestId)
-                .orElseThrow(() -> new NotFoundException("Guest not found with id: " + guestId));
+                .orElseThrow(() -> new GuestNotFoundException("Guest not found with id: " + guestId));
 
         return guest.getFavoriteRestaurants().stream()
                 .map(restaurant -> modelMapper.map(restaurant, Restaurant.class))
@@ -189,14 +217,11 @@ public class RestaurantService implements RestaurantServiceInterface {
                         .map(StandardUserEntity::getUserAccount)
                         .map(UserAccountEntity::getEmail)
                         .ifPresent(email -> {
-                            // Prepare notification
                             String subject = "New Restaurant Added!";
                             String body = "A new restaurant, " + restaurantEntity.getName() + ", has been added to the category: " + category.getName();
 
-                            // Send email
                             emailService.sendEmail(email, subject, body);
 
-                            // Save notification
                             NotificationEntity notification = new NotificationEntity();
                             notification.setContent(body);
                             notification.setDate(new Date());
@@ -208,4 +233,3 @@ public class RestaurantService implements RestaurantServiceInterface {
         }
     }
 }
-
