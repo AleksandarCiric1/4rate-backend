@@ -123,11 +123,13 @@ public class RestaurantService implements RestaurantServiceInterface {
     }
 
     private void notifySubscribers(RestaurantEntity restaurantEntity) {
+        // Get the categories of the restaurant
         List<CategoryEntity> categories = restaurantEntity.getRestaurantCategories().stream()
                 .map(RestaurantCategoryEntity::getCategory)
                 .collect(Collectors.toList());
 
         for (CategoryEntity category : categories) {
+            // Get all subscriptions for the categories
             List<CategorySubscriptionEntity> subscriptions = categorySubscriptionRepository.findByCategory(category);
 
             for (CategorySubscriptionEntity subscription : subscriptions) {
@@ -137,13 +139,18 @@ public class RestaurantService implements RestaurantServiceInterface {
                         .map(StandardUserEntity::getUserAccount)
                         .map(UserAccountEntity::getEmail)
                         .ifPresent(email -> {
-                            
                             String subject = "New Restaurant Added!";
                             String body = "A new restaurant, " + restaurantEntity.getName() + ", has been added to the category: " + category.getName();
 
                             emailService.sendEmail(email, subject, body);
 
-                           
+                            // Save notification
+                            NotificationEntity notification = new NotificationEntity();
+                            notification.setContent(body);
+                            notification.setDate(new Date());
+                            notification.setStatus(false); // Unread
+                            notification.setStandardUser(guest.getStandardUser());
+                            notificationService.saveNotification(notification);
                         });
             }
         }
