@@ -8,6 +8,7 @@ import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.User;
+import com.example.backend4rate.models.dto.PasswordChange;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.services.impl.UserAccountService;
@@ -40,9 +41,9 @@ public class UserAccountController {
         return userAccountService.login(loginUser);
     }
 
-    @PutMapping("changePassword/{password}")
-    public ResponseEntity<?> changePassword(@PathVariable String password, @RequestBody LoginUser loginUser) throws NotFoundException, UnauthorizedException{
-        userAccountService.changePassword(loginUser, password);
+    @PutMapping("/passwordChange")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChange passwordChange) throws NotFoundException, UnauthorizedException{
+        userAccountService.changePassword(passwordChange);
         return ResponseEntity.ok().build();
     }
 

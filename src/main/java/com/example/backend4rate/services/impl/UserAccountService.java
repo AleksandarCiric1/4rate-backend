@@ -15,6 +15,7 @@ import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.StandardUser;
+import com.example.backend4rate.models.dto.PasswordChange;
 import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
@@ -161,11 +162,9 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public void changePassword(LoginUser loginUser, String password) throws NotFoundException , UnauthorizedException{
-        UserAccountResponse userAccountResponse = this.login(loginUser);
-
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(userAccountResponse.getId()).orElseThrow(NotFoundException::new);
-        userAccountEntity.setPassword(passwordEncoder.encode(password));
+    public void changePassword(PasswordChange passwordChange) throws NotFoundException , UnauthorizedException{
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(passwordChange.getUserAccountId()).orElseThrow(NotFoundException::new);
+        userAccountEntity.setPassword(passwordEncoder.encode(passwordChange.getNewPassword()));
         userAccountRepository.save(userAccountEntity);
     }
 

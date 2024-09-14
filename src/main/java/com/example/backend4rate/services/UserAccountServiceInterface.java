@@ -11,6 +11,7 @@ import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.User;
+import com.example.backend4rate.models.dto.PasswordChange;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.entities.UserAccountEntity;
@@ -25,7 +26,7 @@ public interface UserAccountServiceInterface {
     
     List<User> getAllAccounts();
 
-    void changePassword(LoginUser loginUser, String password) throws NotFoundException, UnauthorizedException;
+    void changePassword(PasswordChange passwoedChange) throws NotFoundException, UnauthorizedException;
 
     UserAccountEntity confirmAccount(Integer id) throws NotFoundException;
 
