@@ -8,5 +8,5 @@ public interface NotificationServiceInterface {
     List<NotificationEntity> getNotificationsForGuest(Integer guestId);
     void markAsRead(Integer notificationId);
     void markAllAsRead(Integer guestId);
+    void saveNotification(NotificationEntity notification);
 }
-
