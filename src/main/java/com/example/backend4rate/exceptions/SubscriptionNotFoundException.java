@@ -1,7 +1,11 @@
 package com.example.backend4rate.exceptions;
+public class SubscriptionNotFoundException extends RuntimeException {
 
-public class CategoryNotFoundException extends RuntimeException {
-    public CategoryNotFoundException(String message) {
+    public SubscriptionNotFoundException(String message) {
         super(message);
+    }
+    
+public SubscriptionNotFoundException() {
+        super("Subscription not found");
     }
 }
