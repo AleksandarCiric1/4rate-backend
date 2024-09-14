@@ -161,6 +161,15 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
+    public void changePassword(LoginUser loginUser, String password) throws NotFoundException , UnauthorizedException{
+        UserAccountResponse userAccountResponse = this.login(loginUser);
+
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(userAccountResponse.getId()).orElseThrow(NotFoundException::new);
+        userAccountEntity.setPassword(passwordEncoder.encode(password));
+        userAccountRepository.save(userAccountEntity);
+    }
+
+    @Override
     public UserAccountEntity confirmAccount(Integer id) throws NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
 

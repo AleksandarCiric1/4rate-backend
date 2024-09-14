@@ -40,6 +40,12 @@ public class UserAccountController {
         return userAccountService.login(loginUser);
     }
 
+    @PutMapping("changePassword/{password}")
+    public ResponseEntity<?> changePassword(@PathVariable String password, @RequestBody LoginUser loginUser) throws NotFoundException, UnauthorizedException{
+        userAccountService.changePassword(loginUser, password);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/getInformations/{id}")
     public UserAccount getInformation(@PathVariable Integer id) throws NotFoundException {
         return userAccountService.getInformation(id);
