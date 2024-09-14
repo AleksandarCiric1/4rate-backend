@@ -1,6 +1,7 @@
 package com.example.backend4rate.controllers;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend4rate.models.dto.Restaurant;
@@ -38,10 +39,15 @@ public class RestaurantController {
         return ResponseEntity.ok(createdRestaurant);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateRestaurant(@RequestBody Restaurant restaurant) {
-        restaurantService.updateRestaurantInformation(restaurant);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateRestaurant(@PathVariable Integer id, @RequestBody Restaurant restaurant) {
+        restaurant.setId(id);
+        boolean updated = restaurantService.updateRestaurantInformation(restaurant);
+        if (updated) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping("/search")
