@@ -1,36 +1,44 @@
 package com.example.backend4rate.services.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Restaurant;
-import com.example.backend4rate.models.entities.RestaurantEntity;
-import com.example.backend4rate.models.entities.GuestEntity;
+import com.example.backend4rate.models.entities.*;
+import com.example.backend4rate.repositories.CategorySubscriptionRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.repositories.GuestRepository;
+import com.example.backend4rate.services.EmailServiceInterface;
+import com.example.backend4rate.services.NotificationServiceInterface;
 import com.example.backend4rate.services.RestaurantServiceInterface;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RestaurantService implements RestaurantServiceInterface {
 
     private final RestaurantRepository restaurantRepository;
     private final GuestRepository guestRepository;
+    private final CategorySubscriptionRepository categorySubscriptionRepository;
+    private final NotificationServiceInterface notificationService;
+    private final EmailServiceInterface emailService;
     private final ModelMapper modelMapper;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, GuestRepository guestRepository,ModelMapper modelMapper) {
+    public RestaurantService(RestaurantRepository restaurantRepository,
+                             GuestRepository guestRepository,
+                             CategorySubscriptionRepository categorySubscriptionRepository,
+                             NotificationServiceInterface notificationService,
+                             EmailServiceInterface emailService,
+                             ModelMapper modelMapper) {
         this.restaurantRepository = restaurantRepository;
         this.guestRepository = guestRepository;
+        this.categorySubscriptionRepository = categorySubscriptionRepository;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
         this.modelMapper = modelMapper;
-    }
-
-    @Override
-    public Restaurant addRestaurant(Restaurant restaurant) {
-        RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
-        restaurantEntity.setId(null);
-        RestaurantEntity savedEntity = restaurantRepository.saveAndFlush(restaurantEntity);
-        return modelMapper.map(savedEntity, Restaurant.class);
     }
 
 
