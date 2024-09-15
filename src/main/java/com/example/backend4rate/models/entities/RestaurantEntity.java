@@ -3,6 +3,7 @@ package com.example.backend4rate.models.entities;
 import java.util.List;
 
 import com.example.backend4rate.base.BaseEntity;
+import com.example.backend4rate.models.enums.PriceRange;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,9 +30,18 @@ public class RestaurantEntity implements BaseEntity<Integer>{
     @Column(name = "work_time", nullable = false)
     private String workTime;
     
+    @OneToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
+    private AddressEntity address;
+
+    @Basic
+    @Column(name="price_range")
+    private PriceRange priceRange;
+
     @Basic
     @Column(name = "status", nullable = false)
     private String status;
+
 
     @OneToOne(mappedBy = "restaurant")
     private ManagerEntity manager;
