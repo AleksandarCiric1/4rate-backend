@@ -8,8 +8,8 @@ import com.example.backend4rate.models.dto.Reservation;
 public interface ReservationServiceInterface {
 
     Reservation getReservation(Integer reservationId) throws NotFoundException;
-   // List<Reservation> getAllGuestReservation(Integer guestId);
-   // List<Reservation> getAllRestaurantReservation(Integer restaurant);
+    List<Reservation> getAllGuestReservations(Integer guestId) throws NotFoundException;
+    List<Reservation> getAllRestaurantReservations(Integer restaurant) throws NotFoundException;
     void deleteReservation(Integer reservationId);
     Reservation makeReservation(Reservation reservation) throws NotFoundException, DuplicateReservationException;    
 

@@ -1,6 +1,7 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Reservation;
+import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.entities.GuestEntity;
 import com.example.backend4rate.models.entities.ReservationEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
@@ -56,5 +58,25 @@ public class ReservationService implements ReservationServiceInterface{
 
         return modelMapper.map(reservationEntity, Reservation.class);
 }
+
+
+
+    @Override
+    public List<Reservation> getAllGuestReservations(Integer guestId) throws NotFoundException {
+       List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestId);
+        if(reservationEntityList.isEmpty()) throw new NotFoundException();
+        return reservationEntityList.stream().map(l -> modelMapper.map(l, Reservation.class))
+                .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public List<Reservation> getAllRestaurantReservations(Integer restaurantId) throws NotFoundException {
+        List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
+        if(reservationEntityList.isEmpty()) throw new NotFoundException();
+        return reservationEntityList.stream().map(l -> modelMapper.map(l, Reservation.class))
+                .collect(Collectors.toList());
+    }
 
 }
