@@ -104,7 +104,7 @@ public class ImageService implements ImageServiceInterface {
     }
 
     @Override
-    public void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException {
+    public String uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
         String avatar = userAccountEntity.getAvatarUrl();
 
@@ -123,6 +123,7 @@ public class ImageService implements ImageServiceInterface {
         }
         Path filePath = uploadPath.resolve(uniqueFileName);
         Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        return uniqueFileName;
     }
 
     @Override

@@ -17,20 +17,7 @@ public class AdministratorEntity implements BaseEntity<Integer> {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Basic
-    @Column(name = "first_name", nullable = true)
-    private String firstName;
-
-    @Basic
-    @Column(name = "last_name", nullable = true)
-    private String lastName;
-
-    @Basic
-    @Column(name = "date_of_birth", nullable = true)
-    private Date dateOfBirth;
-
     @OneToOne
     @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
     private UserAccountEntity userAccount;
-
 }

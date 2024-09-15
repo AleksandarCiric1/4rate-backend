@@ -9,18 +9,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 
-public interface ImageServiceInterface{
+public interface ImageServiceInterface {
     void uploadImage(List<MultipartFile> imageFile, Integer id) throws IOException, NotFoundException;
 
     List<Resource> getImages(Integer idRestaurant) throws MalformedURLException;
 
     Resource getImage(Integer id, String imageName) throws NotFoundException, MalformedURLException;
 
-    void deleteImage(Integer id)  throws NotFoundException, IOException;
+    void deleteImage(Integer id) throws NotFoundException, IOException;
 
-    void uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
+    String uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException;
 
     Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException;
 
-    void deleteAvatar(Integer id)  throws NotFoundException, IOException;
+    void deleteAvatar(Integer id) throws NotFoundException, IOException;
 }

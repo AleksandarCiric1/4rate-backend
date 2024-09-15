@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Table(name = "guest")
 @Entity
-public class GuestEntity implements BaseEntity<Integer>{
+public class GuestEntity implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,8 @@ public class GuestEntity implements BaseEntity<Integer>{
     private String contact;
 
     @OneToOne
-    @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable = false)
-    private StandardUserEntity standardUser;
+    @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
+    private UserAccountEntity userAccount;
 
     @OneToMany(mappedBy = "guest")
     private List<CategorySubscriptionEntity> categorySubscriptions;

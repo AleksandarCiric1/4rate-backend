@@ -41,16 +41,6 @@ public class AdministratorController {
         return userAccountService.unsuspendUserAccount(id);
     }
 
-    @GetMapping
-    public List<UserAccountResponse> getAllUserAccounts() {
-        return userAccountService.getAllUserAccount();
-    }
-
-    @GetMapping("/getById/{id}")
-    public UserAccountResponse getUserAccountsById(@PathVariable Integer id) throws NotFoundException {
-        return userAccountService.getUserAccountById(id);
-    }
-
     @PostMapping("/createAdminAccount")
     public ResponseEntity<?> createAdministratorAccount(@RequestBody UserAccount userAccount)
             throws NotFoundException, BadRequestException {

@@ -1,48 +1,37 @@
-package com.example.backend4rate.models.entities;
+// package com.example.backend4rate.models.entities;
 
-import java.util.Date;
-import java.util.List;
+// import java.util.Date;
+// import java.util.List;
 
-import com.example.backend4rate.base.BaseEntity;
+// import com.example.backend4rate.base.BaseEntity;
 
-import jakarta.persistence.*;
-import lombok.Data;
+// import jakarta.persistence.*;
+// import lombok.Data;
 
-@Data
-@Table(name = "standard_user")
-@Entity
-public class StandardUserEntity implements BaseEntity<Integer>{
+// @Data
+// @Table(name = "standard_user")
+// @Entity
+// public class StandardUserEntity implements BaseEntity<Integer> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+// @Id
+// @GeneratedValue(strategy = GenerationType.IDENTITY)
+// @Column(name = "id", nullable = false)
+// private Integer id;
 
-    @Basic
-    @Column(name = "first_name", nullable = true)
-    private String firstName;
+// @OneToOne
+// @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable =
+// false)
+// private UserAccountEntity userAccount;
 
-    @Basic
-    @Column(name = "last_name", nullable = true)
-    private String lastName;
+// @OneToOne(mappedBy = "standardUser")
+// private GuestEntity guest;
 
-    @Basic
-    @Column(name = "date_of_birth", nullable = true)
-    private Date dateOfBirth;
+// @OneToOne(cascade = CascadeType.ALL, mappedBy = "standardUser")
+// private ManagerEntity manager;
 
-    @OneToOne
-    @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
-    private UserAccountEntity userAccount;
+// @OneToMany(mappedBy = "standardUser")
+// private List<CommentEntity> comments;
 
-    @OneToOne(mappedBy = "standardUser")
-    private GuestEntity guest;
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "standardUser")
-    private ManagerEntity manager;
-
-    @OneToMany(mappedBy = "standardUser")
-    private List<CommentEntity> comments;
-
-    @OneToMany(mappedBy = "standardUser")
-    private List<NotificationEntity> notifications;
-}
+// @OneToMany(mappedBy = "standardUser")
+// private List<NotificationEntity> notifications;
+// }
