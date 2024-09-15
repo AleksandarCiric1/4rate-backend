@@ -7,18 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    private Integer id;
+@NoArgsConstructor
+public class UserUpdateDTO {
+    private Integer userAccountId;
     private String username;
-    private String role;
-    private String status;
-    private boolean confirmed;
     private String email;
-    private Date createdAt;
-    private String avatarUrl;
-    private Date dateOfBirth;
     private String firstName;
     private String lastName;
+    private Date dateOfBirth;
 }

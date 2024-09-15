@@ -8,25 +8,21 @@ import lombok.Data;
 @Data
 @Table(name = "manager")
 @Entity
-public class ManagerEntity implements BaseEntity<Integer>{
+public class ManagerEntity implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Basic
-    @Column(name = "contact")
-    private String contact;
-
     @OneToOne
-    @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable = false)
-    private StandardUserEntity standardUser;
+    @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
+    private UserAccountEntity userAccount;
 
     @OneToOne
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
     private RestaurantEntity restaurant;
-    
-    @OneToOne(mappedBy  = "manager")
+
+    @OneToOne(mappedBy = "manager")
     private RequestForRestaurantEntity requestForRestaurant;
 }

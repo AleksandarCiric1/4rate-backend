@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Table(name = "comment")
 @Entity
-public class CommentEntity implements BaseEntity<Integer>{
+public class CommentEntity implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,6 @@ public class CommentEntity implements BaseEntity<Integer>{
     private RestaurantEntity restaurant;
 
     @ManyToOne
-    @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable = false)
-    private StandardUserEntity standardUser;
+    @JoinColumn(name = "guest_id", referencedColumnName = "id", nullable = false)
+    private GuestEntity guest;
 }

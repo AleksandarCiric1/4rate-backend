@@ -16,44 +16,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
-
-
 @RestController
 @RequestMapping("/v1/categories")
 public class CategoryController {
 
     private final CategoryServiceInterface categoryService;
 
-    public CategoryController(CategoryServiceInterface categoryService){
+    public CategoryController(CategoryServiceInterface categoryService) {
         this.categoryService = categoryService;
     }
 
-
     @GetMapping("/getAll")
-    public ResponseEntity<?> getMethodName() throws NotFoundException {
-        List<Category> categories = categoryService.getAll();
-        if (categories != null){
-            return ResponseEntity.ok().body(categories);
-        }else {
-            return ResponseEntity.status(204).build();
-        }
+    public ResponseEntity<?> getAllCategories() throws NotFoundException {
+        return ResponseEntity.ok().body(categoryService.getAll());
+
     }
- 
+
     @PutMapping("/activate/{id}")
     public ResponseEntity<?> activateCategory(@PathVariable Integer id) throws NotFoundException {
-        if (categoryService.activateCategory(id)){
+        if (categoryService.activateCategory(id)) {
             return ResponseEntity.ok().build();
-        }else {
+        } else {
             return ResponseEntity.status(404).build();
         }
     }
 
     @PutMapping("/block/{id}")
     public ResponseEntity<?> blockCategory(@PathVariable Integer id) throws NotFoundException {
-        if (categoryService.blockCategory(id)){
+        if (categoryService.blockCategory(id)) {
             return ResponseEntity.ok().build();
-        }else {
+        } else {
             return ResponseEntity.status(404).build();
         }
     }
@@ -61,19 +53,19 @@ public class CategoryController {
     @PostMapping("/add")
     public ResponseEntity<?> addCategory(@RequestBody Category category) {
         Category createdCategory = categoryService.addCategory(category);
-        if (createdCategory != null){
+        if (createdCategory != null) {
             return ResponseEntity.ok().body(createdCategory);
-        }else {
+        } else {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    
+
     @PutMapping("/edit")
     public ResponseEntity<?> editCategory(@RequestBody Category category) throws NotFoundException {
         Category editedCategory = categoryService.editCategory(category);
-        if (editedCategory != null){
+        if (editedCategory != null) {
             return ResponseEntity.ok().body(editedCategory);
-        }else {
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }

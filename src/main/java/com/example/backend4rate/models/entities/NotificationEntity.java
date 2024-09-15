@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Table(name = "notification")
 @Entity
-public class NotificationEntity implements BaseEntity<Integer>{
+public class NotificationEntity implements BaseEntity<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -27,8 +27,9 @@ public class NotificationEntity implements BaseEntity<Integer>{
     @Basic
     @Column(name = "status", nullable = false)
     private boolean status;
-
-    @ManyToOne
-    @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable = false)
-    private StandardUserEntity standardUser;
+    // notifications will be considered later
+    // @ManyToOne
+    // @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable
+    // = false)
+    // private StandardUserEntity standardUser;
 }

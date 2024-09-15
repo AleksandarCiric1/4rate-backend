@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.example.backend4rate.models.entities.ManagerEntity;
 
 @Repository
-public interface ManagerRepository extends JpaRepository<ManagerEntity, Integer>{
-    public ManagerEntity findByStandardUser(StandardUserRepository standardUserRepository);
+public interface ManagerRepository extends JpaRepository<ManagerEntity, Integer> {
+    // public ManagerEntity findByStandardUser(StandardUserRepository
+    // standardUserRepository);
 }

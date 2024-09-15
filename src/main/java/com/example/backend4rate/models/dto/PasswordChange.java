@@ -7,5 +7,5 @@ public class PasswordChange {
     private Integer userAccountId;
     private String currentPassword;
     private String newPassword;
-    private String ConfirmNewPassword;
+    private String confirmNewPassword;
 }

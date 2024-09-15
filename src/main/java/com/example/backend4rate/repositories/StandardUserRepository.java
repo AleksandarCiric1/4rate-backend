@@ -1,12 +1,13 @@
-package com.example.backend4rate.repositories;
+// package com.example.backend4rate.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+// import org.springframework.data.jpa.repository.JpaRepository;
+// import org.springframework.stereotype.Repository;
 
-import com.example.backend4rate.models.entities.StandardUserEntity;
-import com.example.backend4rate.models.entities.UserAccountEntity;
+// import com.example.backend4rate.models.entities.StandardUserEntity;
+// import com.example.backend4rate.models.entities.UserAccountEntity;
 
-@Repository
-public interface StandardUserRepository extends JpaRepository<StandardUserEntity, Integer>{
-    public StandardUserEntity findByUserAccount(UserAccountEntity userAccount);
-}
+// @Repository
+// public interface StandardUserRepository extends
+// JpaRepository<StandardUserEntity, Integer>{
+// public StandardUserEntity findByUserAccount(UserAccountEntity userAccount);
+// }

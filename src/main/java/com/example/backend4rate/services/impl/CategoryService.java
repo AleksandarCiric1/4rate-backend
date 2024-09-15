@@ -18,14 +18,14 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class CategoryService implements CategoryServiceInterface{
+public class CategoryService implements CategoryServiceInterface {
 
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper){
+    public CategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
     }
@@ -33,14 +33,17 @@ public class CategoryService implements CategoryServiceInterface{
     @Override
     public List<Category> getAll() throws NotFoundException {
         List<CategoryEntity> categoryEntities = categoryRepository.findAll();
-        if (categoryEntities.size() == 0)
-            throw new NotFoundException("Couldn't found any category!");
-        return categoryEntities.stream().map(elem -> modelMapper.map(elem, Category.class)).collect(Collectors.toList());
+        // if (categoryEntities.size() == 0)
+        // // throw new NotFoundException("Couldn't found any category!");
+        // return null;
+        return categoryEntities.stream().map(elem -> modelMapper.map(elem, Category.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean activateCategory(Integer id) throws NotFoundException {
-        CategoryEntity categoryEntity = categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Couldn't found category!"));
+        CategoryEntity categoryEntity = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Couldn't found category!"));
 
         categoryEntity.setStatus(true);
         categoryRepository.saveAndFlush(categoryEntity);
@@ -49,7 +52,8 @@ public class CategoryService implements CategoryServiceInterface{
 
     @Override
     public boolean blockCategory(Integer id) throws NotFoundException {
-        CategoryEntity categoryEntity = categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Couldn't found category!"));
+        CategoryEntity categoryEntity = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Couldn't found category!"));
 
         categoryEntity.setStatus(false);
         categoryRepository.saveAndFlush(categoryEntity);
@@ -70,7 +74,7 @@ public class CategoryService implements CategoryServiceInterface{
     @Override
     public Category editCategory(Category category) throws NotFoundException {
         CategoryEntity categoryEntity = categoryRepository.findById(category.getId())
-        .orElseThrow(() -> new NotFoundException("Couldn't found category"));
+                .orElseThrow(() -> new NotFoundException("Couldn't found category"));
 
         modelMapper.map(category, categoryEntity);
 
