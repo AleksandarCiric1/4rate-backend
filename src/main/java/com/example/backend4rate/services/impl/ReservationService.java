@@ -1,9 +1,11 @@
 package com.example.backend4rate.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
@@ -17,6 +19,8 @@ import com.example.backend4rate.repositories.GuestRepository;
 import com.example.backend4rate.repositories.ReservationRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ReservationServiceInterface;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReservationService implements ReservationServiceInterface{
@@ -64,7 +68,7 @@ public class ReservationService implements ReservationServiceInterface{
     @Override
     public List<Reservation> getAllGuestReservations(Integer guestId) throws NotFoundException {
        List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestId);
-        if(reservationEntityList.isEmpty()) throw new NotFoundException();
+        if(reservationEntityList.isEmpty()) throw new NotFoundException("Guest hasn't made any reservations! ");
         return reservationEntityList.stream().map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
@@ -74,9 +78,16 @@ public class ReservationService implements ReservationServiceInterface{
     @Override
     public List<Reservation> getAllRestaurantReservations(Integer restaurantId) throws NotFoundException {
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
-        if(reservationEntityList.isEmpty()) throw new NotFoundException();
+        if(reservationEntityList.isEmpty()) throw new NotFoundException("There are no reservations for this restaurant!");
         return reservationEntityList.stream().map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    @Transactional
+    public void deleteExpiredReservations() {
+        LocalDateTime now = LocalDateTime.now();
+        reservationRepository.deleteByDateBefore(now);
     }
 
 }

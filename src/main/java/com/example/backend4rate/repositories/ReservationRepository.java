@@ -1,5 +1,6 @@
 package com.example.backend4rate.repositories;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +17,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     Optional<ReservationEntity> findByGuestAndRestaurantAndDate(GuestEntity g, RestaurantEntity r, Date d);
     List<ReservationEntity> findAllByGuest_Id(Integer guestId);    
     List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId);    
+
+    void deleteByDateBefore(LocalDateTime dateTime);
 
 }
