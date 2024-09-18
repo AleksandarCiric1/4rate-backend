@@ -32,5 +32,5 @@ public class GuestEntity implements BaseEntity<Integer> {
     private List<ReservationEntity> reservations;
 
     @OneToMany(mappedBy = "guest")
-    private List<GradeEntity> grades;
+    private List<ReviewEntity> review;
 }

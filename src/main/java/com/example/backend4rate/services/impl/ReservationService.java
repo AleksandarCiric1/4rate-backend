@@ -28,7 +28,6 @@ import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ReservationServiceInterface;
 
 import jakarta.transaction.Transactional;
-import lombok.experimental.var;
 
 @Service
 public class ReservationService implements ReservationServiceInterface {
