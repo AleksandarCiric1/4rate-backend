@@ -63,7 +63,7 @@ public class RestaurantEntity implements BaseEntity<Integer> {
     private List<MonthlyReportEntity> monthlyReports;
 
     @OneToMany(mappedBy = "restaurant")
-    private List<CommentEntity> comments;
+    private List<ReviewEntity> review;
 
     @OneToMany(mappedBy = "restaurant")
     private List<ReservationEntity> reservations;
@@ -71,6 +71,4 @@ public class RestaurantEntity implements BaseEntity<Integer> {
     @OneToMany(mappedBy = "restaurant")
     private List<RestaurantCategoryEntity> restaurantCategories;
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<GradeEntity> grades;
 }
