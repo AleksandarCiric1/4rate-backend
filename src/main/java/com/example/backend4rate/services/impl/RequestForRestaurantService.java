@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.models.dto.ProcessRequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import com.example.backend4rate.models.entities.ManagerEntity;
@@ -34,13 +36,16 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerId)
+    public RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer userAccountId)
             throws NotFoundException {
         RequestForRestaurantEntity requestForRestaurantEntity = modelMapper.map(request,
                 RequestForRestaurantEntity.class);
         requestForRestaurantEntity.setId(null);
 
-        ManagerEntity managerEntity = managerRepository.findById(managerId).orElseThrow(NotFoundException::new);
+        ManagerEntity managerEntity = managerRepository.findByUserAccountId(userAccountId);
+        if (managerEntity == null) {
+            throw new NotFoundException();
+        }
         requestForRestaurantEntity.setManager(managerEntity);
         requestForRestaurantEntity = requestForRestaurantRepository.saveAndFlush(requestForRestaurantEntity);
 
@@ -48,8 +53,11 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public boolean approveRequestForRestaurant(Integer id) throws NotFoundException {
-        RequestForRestaurantResponse request = this.getRequestForRestaurant(id);
+    public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
+        RequestForRestaurantResponse request = this.getRequestForRestaurant(requestId);
+        ManagerEntity managerEntity = managerRepository.findById(request.getManagerId())
+                .orElseThrow(NotFoundException::new);
+
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
         restaurantEntity.setName(request.getName());
@@ -58,18 +66,20 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         restaurantEntity.setId(null);
         restaurantEntity.setStatus("active");
 
-        if (!this.deleteRequest(id)) {
+        if (!this.deleteRequest(requestId)) {
             return false;
         }
 
         restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
+        managerEntity.setRestaurant(restaurantEntity);
+        managerRepository.saveAndFlush(managerEntity);
 
         return true;
     }
 
     @Override
-    public boolean denyRequestForRestaurant(Integer id) {
-        return this.deleteRequest(id);
+    public boolean denyRequestForRestaurant(Integer requestId) throws NotFoundException {
+        return this.deleteRequest(requestId);
     }
 
     @Override

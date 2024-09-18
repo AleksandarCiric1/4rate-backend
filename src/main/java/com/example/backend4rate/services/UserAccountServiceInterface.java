@@ -35,7 +35,7 @@ public interface UserAccountServiceInterface {
 
     User createAdministratorAccount(UserAccount userAccount) throws NotFoundException, BadRequestException;
 
-    Integer login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
+    User login(LoginUser loginUser) throws NotFoundException, UnauthorizedException;
 
     User getUserByUserAccountId(Integer id) throws NotFoundException;
 

@@ -32,10 +32,7 @@ public class CategoryService implements CategoryServiceInterface {
 
     @Override
     public List<Category> getAll() throws NotFoundException {
-        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
-        // if (categoryEntities.size() == 0)
-        // // throw new NotFoundException("Couldn't found any category!");
-        // return null;
+        List<CategoryEntity> categoryEntities = categoryRepository.findByStatus(true);
         return categoryEntities.stream().map(elem -> modelMapper.map(elem, Category.class))
                 .collect(Collectors.toList());
     }

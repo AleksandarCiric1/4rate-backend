@@ -7,6 +7,5 @@ import com.example.backend4rate.models.entities.ManagerEntity;
 
 @Repository
 public interface ManagerRepository extends JpaRepository<ManagerEntity, Integer> {
-    // public ManagerEntity findByStandardUser(StandardUserRepository
-    // standardUserRepository);
+    ManagerEntity findByUserAccountId(Integer userAccountId);
 }

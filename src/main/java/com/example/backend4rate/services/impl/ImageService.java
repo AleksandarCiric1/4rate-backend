@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.entities.ImageEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
+import com.example.backend4rate.models.entities.RestaurantPhoneEntity;
 import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.ImageRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
@@ -47,7 +48,7 @@ public class ImageService implements ImageServiceInterface {
     @Override
     public void uploadImage(List<MultipartFile> imageFiles, Integer id) throws IOException, NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(id).orElseThrow(NotFoundException::new);
-
+        deleteImagesForRestaurant(restaurantEntity);
         for (MultipartFile imageFile : imageFiles) {
             String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
 
@@ -59,10 +60,23 @@ public class ImageService implements ImageServiceInterface {
             imageRepository.save(imageEntity);
 
             Path uploadPath = Path.of(pathToRestaurant + restaurantEntity.getId());
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
             Path filePath = uploadPath.resolve(uniqueFileName);
 
             Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    private boolean deleteImagesForRestaurant(RestaurantEntity restaurantEntity) throws NotFoundException, IOException {
+        List<ImageEntity> imageEntities = imageRepository.findAllByRestaurant(restaurantEntity);
+
+        for (ImageEntity elem : imageEntities) {
+            deleteImage(elem.getId());
+        }
+
+        return true;
     }
 
     @Override
@@ -130,8 +144,11 @@ public class ImageService implements ImageServiceInterface {
     public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
         String avatar = userAccountEntity.getAvatarUrl();
-        Path path = Paths.get(pathToAvatar).resolve(avatar);
-        return new UrlResource(path.toUri());
+        if (avatar != null) {
+            Path path = Paths.get(pathToAvatar).resolve(avatar);
+            return new UrlResource(path.toUri());
+        }
+        return null;
     }
 
     @Override

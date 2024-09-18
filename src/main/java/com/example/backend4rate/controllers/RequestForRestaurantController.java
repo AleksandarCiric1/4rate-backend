@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.models.dto.ProcessRequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import com.example.backend4rate.services.impl.RequestForRestaurantService;
@@ -27,11 +28,11 @@ public class RequestForRestaurantController {
         this.requestForRestaurantService = requestForRestaurantService;
     }
 
-    @PostMapping("/createRequest/{managerId}")
+    @PostMapping("/createRequest/{userAccountId}")
     public RequestForRestaurantResponse createRequestForRestaurant(
-            @RequestBody RequestForRestaurant requestForRestaurant, @PathVariable Integer managerId)
+            @RequestBody RequestForRestaurant requestForRestaurant, @PathVariable Integer userAccountId)
             throws NotFoundException {
-        return requestForRestaurantService.createRequestForRestaurant(requestForRestaurant, managerId);
+        return requestForRestaurantService.createRequestForRestaurant(requestForRestaurant, userAccountId);
     }
 
     @GetMapping("/getRequest/{id}")
@@ -39,7 +40,7 @@ public class RequestForRestaurantController {
         return requestForRestaurantService.getRequestForRestaurant(id);
     }
 
-    @GetMapping("/getAllRequest")
+    @GetMapping("/getAllRequests")
     public List<RequestForRestaurantResponse> getAllRequestForRestaurant() {
         return requestForRestaurantService.getAllRequestForRestaurant();
     }
@@ -49,14 +50,20 @@ public class RequestForRestaurantController {
         return requestForRestaurantService.cancelRequestForRestaurant(id);
     }
 
-    @PutMapping("/denyRequest/{id}")
-    public boolean denyRequestForRestaurant(@PathVariable Integer id) {
-        return requestForRestaurantService.denyRequestForRestaurant(id);
+    @PutMapping("/denyRequest/{requestId}")
+    public ResponseEntity<?> denyRequestForRestaurant(@PathVariable Integer requestId)
+            throws NotFoundException {
+        if (requestForRestaurantService.denyRequestForRestaurant(requestId)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @PutMapping("/approveRequest/{id}")
-    public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer id) throws NotFoundException {
-        if (requestForRestaurantService.approveRequestForRestaurant(id)) {
+    @PutMapping("/approveRequest/{requestId}")
+    public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer requestId)
+            throws NotFoundException {
+        if (requestForRestaurantService.approveRequestForRestaurant(requestId)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().build();

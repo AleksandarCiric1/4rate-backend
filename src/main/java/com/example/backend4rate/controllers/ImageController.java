@@ -78,10 +78,10 @@ public class ImageController {
             throws NotFoundException, MalformedURLException {
         Resource resource = imageService.getAvatar(id);
 
-        if (resource.exists() || resource.isReadable()) {
+        if (resource != null && (resource.exists() || resource.isReadable())) {
             return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

@@ -195,12 +195,12 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public Integer login(LoginUser loginUser) throws NotFoundException, UnauthorizedException {
+    public User login(LoginUser loginUser) throws NotFoundException, UnauthorizedException {
         UserAccountEntity userAccountEntity = userAccountRepository.findByUsername(loginUser.getUsername());
         if (userAccountEntity != null && "active".equals(userAccountEntity.getStatus())
                 && userAccountEntity.isConfirmed()) {
             if (passwordEncoder.matches(loginUser.getPassword(), userAccountEntity.getPassword())) {
-                return userAccountEntity.getId();
+                return modelMapper.map(userAccountEntity, User.class);
             } else {
                 throw new UnauthorizedException();
             }

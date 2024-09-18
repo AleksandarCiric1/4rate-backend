@@ -15,6 +15,9 @@ public class Restaurant {
     private String description;
     private String workTime;
     private String status;
+    private String address;
+    private String city;
+    private String country;
     private List<RestaurantPhone> restaurantPhones;
     private List<Image> images;
     private List<Comment> comments;

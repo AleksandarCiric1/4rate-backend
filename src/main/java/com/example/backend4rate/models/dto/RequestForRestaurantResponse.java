@@ -8,4 +8,5 @@ public class RequestForRestaurantResponse {
     private String name;
     private String workTime;
     private String description;
+    private Integer managerId;
 }

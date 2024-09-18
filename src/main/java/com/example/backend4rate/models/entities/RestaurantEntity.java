@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @Table(name = "restaurant")
 @Entity
-public class RestaurantEntity implements BaseEntity<Integer>{
+public class RestaurantEntity implements BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,19 +29,22 @@ public class RestaurantEntity implements BaseEntity<Integer>{
     @Basic
     @Column(name = "work_time", nullable = false)
     private String workTime;
-    
-    @OneToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
-    private AddressEntity address;
 
     @Basic
-    @Column(name="price_range")
-    private PriceRange priceRange;
+    @Column(name = "address")
+    private String address;
+
+    @Basic
+    @Column(name = "city")
+    private String city;
+
+    @Basic
+    @Column(name = "country")
+    private String country;
 
     @Basic
     @Column(name = "status", nullable = false)
     private String status;
-
 
     @OneToOne(mappedBy = "restaurant")
     private ManagerEntity manager;

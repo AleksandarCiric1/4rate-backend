@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
-@Table(name="address")
+@Table(name = "address")
 @Entity
 public class AddressEntity {
 
@@ -26,13 +26,11 @@ public class AddressEntity {
     private Integer id;
 
     @Basic
-    @Column(name="address", nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", referencedColumnName = "id", nullable = false)
     private CityEntity city;
 
-    @OneToOne(mappedBy = "address")
-    private RestaurantEntity restaurant;
 }
