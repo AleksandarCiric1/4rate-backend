@@ -1,9 +1,9 @@
 package com.example.backend4rate.models.entities;
 
 import java.util.List;
+import java.util.Date;
 
 import com.example.backend4rate.base.BaseEntity;
-import com.example.backend4rate.models.enums.PriceRange;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -41,6 +41,10 @@ public class RestaurantEntity implements BaseEntity<Integer> {
     @Basic
     @Column(name = "country")
     private String country;
+
+    @Basic
+    @Column(name = "created_at")
+    private Date createdAt;
 
     @Basic
     @Column(name = "status", nullable = false)

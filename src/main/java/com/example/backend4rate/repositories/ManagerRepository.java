@@ -8,4 +8,6 @@ import com.example.backend4rate.models.entities.ManagerEntity;
 @Repository
 public interface ManagerRepository extends JpaRepository<ManagerEntity, Integer> {
     ManagerEntity findByUserAccountId(Integer userAccountId);
+
+    ManagerEntity findByRestaurantId(Integer restaurantId);
 }

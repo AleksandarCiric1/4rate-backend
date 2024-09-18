@@ -19,11 +19,15 @@ public class MonthlyReportEntity implements BaseEntity<Integer>{
 
     @Basic
     @Column(name = "number_of_resrvations", nullable = false)
-    private Integer numberOfReservations;
+    private Long numberOfReservations;
 
     @Basic
     @Column(name = "date", nullable = false)
     private Date date;
+
+    @Basic
+    @Column(name = "month")
+    private Integer month;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)

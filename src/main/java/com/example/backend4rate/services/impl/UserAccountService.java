@@ -3,7 +3,6 @@ package com.example.backend4rate.services.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.Date;
 
 import org.modelmapper.ModelMapper;
@@ -14,9 +13,7 @@ import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
-import com.example.backend4rate.models.dto.StandardUser;
 import com.example.backend4rate.models.dto.PasswordChange;
-import com.example.backend4rate.models.dto.UpdateInformation;
 import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
@@ -45,6 +42,8 @@ public class UserAccountService implements UserAccountServiceInterface {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final String subject = "4Rate Account";
+    private final String body = "Your Account is blocked";
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -115,7 +114,7 @@ public class UserAccountService implements UserAccountServiceInterface {
             userAccountEntity.setConfirmed(true);
             userAccountRepository.save(userAccountEntity);
 
-            emailService.sendEmail(userAccountEntity.getEmail(), "4Rate Account", "Your account is active.");
+            emailService.sendEmail(userAccountEntity.getEmail(), subject, body);
         }
         return userAccountEntity;
     }

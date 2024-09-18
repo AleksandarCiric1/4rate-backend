@@ -1,6 +1,7 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,11 +17,13 @@ import com.example.backend4rate.models.entities.ManagerEntity;
 import com.example.backend4rate.models.entities.RestaurantCategoryEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
 import com.example.backend4rate.models.entities.RestaurantPhoneEntity;
+import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.CategoryRepository;
 import com.example.backend4rate.repositories.ManagerRepository;
 import com.example.backend4rate.repositories.RestaurantCategoryRepository;
 import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
+import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.services.RestaurantServiceInterface;
 
 @Service
@@ -32,16 +35,23 @@ public class RestaurantService implements RestaurantServiceInterface {
     private final RestaurantPhoneRepository restaurantPhoneRepository;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final CategoryRepository categoryRepository;
+    private final EmailService emailService;
+    private final UserAccountRepository userAccountRepository;
+    private final String subject = "4Rate Account";
+    private final String body = "Your Account is blocked";
 
     public RestaurantService(RestaurantRepository restaurantRepository, ModelMapper modelMapper,
             ManagerRepository managerRepository, RestaurantPhoneRepository restaurantPhoneRepository,
-            RestaurantCategoryRepository restaurantCategoryRepository, CategoryRepository categoryRepository) {
+            RestaurantCategoryRepository restaurantCategoryRepository, CategoryRepository categoryRepository, 
+            EmailService emailService, UserAccountRepository userAccountRepository) {
         this.restaurantRepository = restaurantRepository;
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.restaurantPhoneRepository = restaurantPhoneRepository;
         this.restaurantCategoryRepository = restaurantCategoryRepository;
         this.categoryRepository = categoryRepository;
+        this.emailService = emailService;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @Override
@@ -59,12 +69,14 @@ public class RestaurantService implements RestaurantServiceInterface {
     public boolean blockRestaurant(RestaurantBlock restaurantToBlock) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantToBlock.getId())
                 .orElseThrow(() -> new NotFoundException("Couldn't found restaurant!"));
+        
+        ManagerEntity managerEntity = managerRepository.findByRestaurantId(restaurantEntity.getId());
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(managerEntity.getUserAccount().getId()).orElseThrow(NotFoundException::new);
+        emailService.sendEmail(userAccountEntity.getEmail(), subject, body);       
 
         restaurantEntity.setStatus("blocked");
         restaurantRepository.saveAndFlush(restaurantEntity);
-        // TO DO , ako je blokiranje proslo uspjesno neophodno je iskoristiti mail
-        // servis za slanje mejla na
-        // osnovu description u restaurantToBlock objekta
+        
         return true;
     }
 

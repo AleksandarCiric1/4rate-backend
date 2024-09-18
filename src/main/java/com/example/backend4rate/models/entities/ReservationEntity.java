@@ -21,6 +21,10 @@ public class ReservationEntity implements BaseEntity<Integer>{
     private Date date;
 
     @Basic
+    @Column(name = "status", nullable =false)
+    private String status;
+
+    @Basic
     @Column(name = "description", nullable = false)
     private String description;
 

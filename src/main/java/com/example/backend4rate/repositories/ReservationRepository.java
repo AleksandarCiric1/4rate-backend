@@ -16,7 +16,8 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
     Optional<ReservationEntity> findByGuestAndRestaurantAndDate(GuestEntity g, RestaurantEntity r, Date d);
     List<ReservationEntity> findAllByGuest_Id(Integer guestId);    
-    List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId);    
+    List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId); 
+    List<ReservationEntity> findAllByRestaurant_IdAndStatus(Integer restaurantId, String status);   
 
     void deleteByDateBefore(LocalDateTime dateTime);
 
