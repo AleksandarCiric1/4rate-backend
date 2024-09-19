@@ -1,5 +1,6 @@
 package com.example.backend4rate.models.entities;
 
+import java.sql.Time;
 import java.util.Date;
 
 import com.example.backend4rate.base.BaseEntity;
@@ -20,6 +21,11 @@ public class ReservationEntity implements BaseEntity<Integer>{
     @Column(name = "date", nullable = false)
     private Date date;
 
+    @Basic
+    @Column(name = "time", nullable = false)
+    private Time time;
+    
+    //QA Da li status da bude enumeracija {APPROVED, DENIED, CANCELED, PENDING}
     @Basic
     @Column(name = "status", nullable =false)
     private String status;

@@ -9,11 +9,11 @@ import com.example.backend4rate.services.impl.ReservationService;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -47,12 +47,26 @@ public class ReservationController {
     public Reservation makeReservation(@RequestBody Reservation reservation) throws NotFoundException, DuplicateReservationException{
         return reservationService.makeReservation(reservation);
     }
-   
-    
 
-    @DeleteMapping("delete/{reservationId}")
-    public void cancelReservation(@PathVariable Integer reservationId) {
-        reservationService.deleteReservation(reservationId);
+    @PutMapping("/approveReservation/{reservationId}")
+    public Reservation apporoveReservation(@PathVariable Integer reservationId) throws NotFoundException{
+        return reservationService.approveReservation(reservationId);
     }
+
+    @PutMapping("/denyReservation/{reservationId}")
+    public Reservation denyReservation(@PathVariable Integer reservationId) throws NotFoundException{
+        return reservationService.denyReservation(reservationId);
+    }
+
+    @PutMapping("/cancelReservation/{reservationId}")
+    public Reservation cancelReservation(@PathVariable Integer reservationId) throws NotFoundException{
+        return reservationService.cancelReservation(reservationId);
+    } 
+    
+    @GetMapping("/getNumberOfReservationsByMonth/{restaurantId}/{month}/{year}")
+    public Long numberOfReservationByMonth(@PathVariable Integer restaurantId, @PathVariable Integer month, @PathVariable Integer year){
+        return reservationService.numberOfReservationsByMonth(restaurantId, month, year);
+    }
+
 
 }

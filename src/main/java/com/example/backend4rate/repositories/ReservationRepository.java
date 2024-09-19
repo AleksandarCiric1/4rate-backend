@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.backend4rate.models.entities.GuestEntity;
@@ -19,6 +21,11 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId); 
     List<ReservationEntity> findAllByRestaurant_IdAndStatus(Integer restaurantId, String status);   
 
-    void deleteByDateBefore(LocalDateTime dateTime);
-
+    //void deleteByDateBefore(LocalDateTime dateTime);
+    @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +
+           "MONTH(r.date) = :month AND YEAR(r.date) = :year")
+    Long countReservationsByRestaurantAndMonthAndYear(@Param("restaurantId") Integer restaurantId, 
+                                                      @Param("month") Integer month, 
+                                                      @Param("year") Integer year);
+    
 }
