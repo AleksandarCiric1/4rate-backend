@@ -42,7 +42,7 @@ public class RestaurantService implements RestaurantServiceInterface {
 
     public RestaurantService(RestaurantRepository restaurantRepository, ModelMapper modelMapper,
             ManagerRepository managerRepository, RestaurantPhoneRepository restaurantPhoneRepository,
-            RestaurantCategoryRepository restaurantCategoryRepository, CategoryRepository categoryRepository, 
+            RestaurantCategoryRepository restaurantCategoryRepository, CategoryRepository categoryRepository,
             EmailService emailService, UserAccountRepository userAccountRepository) {
         this.restaurantRepository = restaurantRepository;
         this.modelMapper = modelMapper;
@@ -56,7 +56,7 @@ public class RestaurantService implements RestaurantServiceInterface {
 
     @Override
     public List<Restaurant> getAll() {
-        List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
+        List<RestaurantEntity> restaurantEntities = restaurantRepository.findAllByStatus("active");
 
         if (restaurantEntities.size() > 0) {
             return restaurantEntities.stream().map(entity -> modelMapper.map(entity, Restaurant.class))
@@ -69,14 +69,15 @@ public class RestaurantService implements RestaurantServiceInterface {
     public boolean blockRestaurant(RestaurantBlock restaurantToBlock) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantToBlock.getId())
                 .orElseThrow(() -> new NotFoundException("Couldn't found restaurant!"));
-        
+
         ManagerEntity managerEntity = managerRepository.findByRestaurantId(restaurantEntity.getId());
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(managerEntity.getUserAccount().getId()).orElseThrow(NotFoundException::new);
-        emailService.sendEmail(userAccountEntity.getEmail(), subject, body);       
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(managerEntity.getUserAccount().getId())
+                .orElseThrow(NotFoundException::new);
+        emailService.sendEmail(userAccountEntity.getEmail(), subject, body);
 
         restaurantEntity.setStatus("blocked");
         restaurantRepository.saveAndFlush(restaurantEntity);
-        
+
         return true;
     }
 
