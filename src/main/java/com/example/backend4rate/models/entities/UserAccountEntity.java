@@ -2,6 +2,8 @@ package com.example.backend4rate.models.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.example.backend4rate.base.BaseEntity;
