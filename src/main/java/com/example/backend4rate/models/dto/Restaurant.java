@@ -21,6 +21,7 @@ public class Restaurant {
     private List<RestaurantPhone> restaurantPhones;
     private List<Image> images;
     private List<Comment> comments;
+    private List<ReviewDTO> reviews;
     private List<ReservationDTO> reservations;
     private List<RestaurantCategory> restaurantCategories;
     private List<Grade> grades;
