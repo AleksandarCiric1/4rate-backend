@@ -40,7 +40,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         RequestForRestaurantEntity requestForRestaurantEntity = modelMapper.map(request,
                 RequestForRestaurantEntity.class);
         requestForRestaurantEntity.setId(null);
-        requestForRestaurantEntity.setStatus("panding");
+        requestForRestaurantEntity.setStatus("pending");
 
         ManagerEntity managerEntity = managerRepository.findByUserAccountId(userAccountId);
         if (managerEntity == null) {
