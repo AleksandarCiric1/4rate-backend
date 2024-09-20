@@ -9,4 +9,5 @@ public interface AnalyticServiceInterface {
     List<UsersPerMonth> getUserCreationStatsForLastYear();
 
     List<RestaurantsPerMonth> getRestaurantCreationStatsForLastYear();
+
 }
