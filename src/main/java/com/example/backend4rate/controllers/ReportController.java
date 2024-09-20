@@ -36,7 +36,7 @@ public class ReportController {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            reportService.getReport(byteArrayOutputStream, restaurantId, Months.valueOf(report.getMonth()), report.getYear());
+            reportService.generateReport(byteArrayOutputStream, restaurantId, Months.valueOf(report.getMonth()), report.getYear());
 
             ByteArrayResource resource = new ByteArrayResource(byteArrayOutputStream.toByteArray());
 

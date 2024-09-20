@@ -8,5 +8,5 @@ import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.enums.Months;
 
 public interface ReportServiceInterface {
-    void getReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month, Integer year) throws BadRequestException, NotFoundException, IOException; 
+    void generateReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month, Integer year) throws BadRequestException, NotFoundException, IOException; 
 }

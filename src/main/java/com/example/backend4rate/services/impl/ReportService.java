@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -41,32 +44,37 @@ public class ReportService implements ReportServiceInterface{
 
     @SuppressWarnings("deprecation")
     @Override
-    public void getReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month, Integer year) throws BadRequestException, NotFoundException, IOException{
+    public void generateReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month, Integer year) throws BadRequestException, NotFoundException, IOException{
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException());
         if(year < restaurantEntity.getCreatedAt().getYear() 
-        || (year == restaurantEntity.getCreatedAt().getYear() && month.getBrojMeseca() < restaurantEntity.getCreatedAt().getMonth())){
+        || (year == restaurantEntity.getCreatedAt().getYear() && month.getNumberOfMonth() < restaurantEntity.getCreatedAt().getMonth())){
             throw new BadRequestException();
         }
         Document document = new Document();
         Date date = new Date();
+        Predicate<ReservationEntity> predicate = r -> {
+            LocalDate localDate = r.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int monthNumber = localDate.getMonthValue();
+            return monthNumber == month.getNumberOfMonth();
+        };
 
         List<ReservationEntity> reservations = reservationRepository.findAllByRestaurant_Id(restaurantId);
         Long numOfReservations = reservations.stream().count();
         List<ReservationEntity> approvedReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "approved");
-        Long numOfApprovedReservations = approvedReservations.stream().count();
+        Long numOfApprovedReservations = approvedReservations.stream().filter(predicate).count();
         List<ReservationEntity> deniedReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "denied");
-        Long numOfDeniedReservations = deniedReservations.stream().count();
+        Long numOfDeniedReservations = deniedReservations.stream().filter(predicate).count();
         List<ReservationEntity> canceledReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "canceled");
-        Long numOfCanceledReservations = canceledReservations.stream().count();
+        Long numOfCanceledReservations = canceledReservations.stream().filter(predicate).count();
         List<ReservationEntity> pendingReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "pending");
-        Long numOfPendingReservations = pendingReservations.stream().count();
+        Long numOfPendingReservations = pendingReservations.stream().filter(predicate).count();
 
         try{
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
 
         Font titleFont  = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
-        Paragraph title = new Paragraph(month.toString() + " report", titleFont);
+        Paragraph title = new Paragraph(month.toString() + " REPORT", titleFont);
         title.setAlignment(Element.ALIGN_LEFT);
         document.add(title);
         document.add(Chunk.NEWLINE);
