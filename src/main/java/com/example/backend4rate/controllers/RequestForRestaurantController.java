@@ -60,7 +60,7 @@ public class RequestForRestaurantController {
         }
     }
 
-    @PutMapping("/approveRequest/{requestId}")
+    @PostMapping("/approveRequest/{requestId}")
     public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer requestId)
             throws NotFoundException {
         if (requestForRestaurantService.approveRequestForRestaurant(requestId)) {

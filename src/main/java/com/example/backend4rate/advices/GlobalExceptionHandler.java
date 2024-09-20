@@ -12,6 +12,7 @@ import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.IOException;
 import com.example.backend4rate.exceptions.InvalidGradeException;
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 
 @ControllerAdvice
@@ -64,5 +65,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleIOException(IOException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ReservationsFullException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleReservationsFullException(ReservationsFullException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }

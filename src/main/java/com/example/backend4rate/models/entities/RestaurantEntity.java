@@ -27,6 +27,10 @@ public class RestaurantEntity implements BaseEntity<Integer> {
     private String description;
 
     @Basic
+    @Column(name="capacity", nullable = false)
+    private Integer capacity;
+
+    @Basic
     @Column(name = "work_time", nullable = false)
     private String workTime;
 
@@ -67,6 +71,9 @@ public class RestaurantEntity implements BaseEntity<Integer> {
 
     @OneToMany(mappedBy = "restaurant")
     private List<ReservationEntity> reservations;
+
+    @OneToMany(mappedBy = "restaurant")
+    private List<ReservationAvailabilityEntity> reservationAvailability;
 
     @OneToMany(mappedBy = "restaurant")
     private List<RestaurantCategoryEntity> restaurantCategories;

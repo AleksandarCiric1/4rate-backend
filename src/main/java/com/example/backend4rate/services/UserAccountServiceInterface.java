@@ -40,4 +40,6 @@ public interface UserAccountServiceInterface {
     User getUserByUserAccountId(Integer id) throws NotFoundException;
 
     boolean updateUserAccount(UserUpdateDTO updateUser) throws NotFoundException;
+
+    Long numOfCreatedAccountsByMonth(Integer month, Integer year);
 }

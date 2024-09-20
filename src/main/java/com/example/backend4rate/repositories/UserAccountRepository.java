@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.entities.UserAccountEntity;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccountEntity, Integer> {
         public UserAccountEntity findByUsername(String username);
+
+        @Query("SELECT COUNT(u) FROM UserAccountEntity u WHERE " +
+        "MONTH(u.createdAt) = :month AND YEAR(u.createdAt) = :year")
+        Long countUserAccountsByMonthAndYear(@Param("month") Integer month, @Param("year") Integer year);
 
         // @Query("SELECT new com.example.backend4rate.models.dto.User(" +
         // "su.id, ua.id as userAccountId, ua.username, ua.role, ua.status, ua.confirmed

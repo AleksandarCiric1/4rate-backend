@@ -26,6 +26,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
+    //private final ReservationAvailabilityService reservationAvailabilityService;
 
     public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository,
             ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository) {
@@ -33,6 +34,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.restaurantRepository = restaurantRepository;
+        //this.reservationAvailabilityService=reservationAvailabilityService;
     }
 
     @Override
@@ -48,7 +50,6 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         }
         requestForRestaurantEntity.setManager(managerEntity);
         requestForRestaurantEntity = requestForRestaurantRepository.saveAndFlush(requestForRestaurantEntity);
-
         return modelMapper.map(requestForRestaurantEntity, RequestForRestaurantResponse.class);
     }
 
@@ -63,6 +64,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         restaurantEntity.setName(request.getName());
         restaurantEntity.setWorkTime(request.getWorkTime());
         restaurantEntity.setDescription(request.getDescription());
+        restaurantEntity.setCapacity(request.getCapacity());
         restaurantEntity.setId(null);
         restaurantEntity.setStatus("active");
 
@@ -72,6 +74,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
         restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
         managerEntity.setRestaurant(restaurantEntity);
+        //reservationAvailabilityService.createReservationAvailability(restaurantEntity);
         managerRepository.saveAndFlush(managerEntity);
 
         return true;
