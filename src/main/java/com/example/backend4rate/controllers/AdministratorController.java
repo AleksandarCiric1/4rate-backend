@@ -62,8 +62,4 @@ public class AdministratorController {
 
     }
 
-    @GetMapping("/numOfAccounts/{month}/{year}")
-    Long numOfCreatedAccountsByMonth(@PathVariable Integer month, @PathVariable Integer year){
-        return userAccountService.numOfCreatedAccountsByMonth(month, year);
-    }
 }

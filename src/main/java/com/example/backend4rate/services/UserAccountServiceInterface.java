@@ -41,5 +41,4 @@ public interface UserAccountServiceInterface {
 
     boolean updateUserAccount(UserUpdateDTO updateUser) throws NotFoundException;
 
-    Long numOfCreatedAccountsByMonth(Integer month, Integer year);
 }

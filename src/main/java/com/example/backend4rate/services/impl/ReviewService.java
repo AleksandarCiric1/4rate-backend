@@ -47,7 +47,8 @@ public class ReviewService implements ReviewServiceInterface {
     @Override // QA Da li parametri da budu id restorana, gosta i taj dto review ili sve
               // spakovano u review dto?
     public ReviewResponse addReview(Integer restaurantId, Review review) throws NotFoundException {
-        GuestEntity guestEntity = guestRepository.findByUserAccountId(review.getUserAccountId());
+        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(review.getUserAccountId())
+                .orElseThrow(NotFoundException::new);
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setGuest(guestEntity);
         reviewEntity.setId(null);

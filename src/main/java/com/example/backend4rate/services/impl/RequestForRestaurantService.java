@@ -1,5 +1,6 @@
 package com.example.backend4rate.services.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
-    //private final ReservationAvailabilityService reservationAvailabilityService;
+    // private final ReservationAvailabilityService reservationAvailabilityService;
 
     public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository,
             ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository) {
@@ -31,7 +32,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.restaurantRepository = restaurantRepository;
-        //this.reservationAvailabilityService=reservationAvailabilityService;
+        // this.reservationAvailabilityService=reservationAvailabilityService;
     }
 
     @Override
@@ -53,7 +54,8 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
-        RequestForRestaurantEntity request = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
+        RequestForRestaurantEntity request = requestForRestaurantRepository.findById(requestId)
+                .orElseThrow(NotFoundException::new);
         ManagerEntity managerEntity = managerRepository.findById(request.getManager().getId())
                 .orElseThrow(NotFoundException::new);
 
@@ -63,6 +65,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         restaurantEntity.setWorkTime(request.getWorkTime());
         restaurantEntity.setDescription(request.getDescription());
         restaurantEntity.setCapacity(request.getCapacity());
+        restaurantEntity.setCreatedAt(new Date());
         restaurantEntity.setId(null);
         restaurantEntity.setStatus("active");
 
@@ -92,13 +95,14 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public boolean cancelRequestForRestaurant(Integer requestId) throws NotFoundException{
-        return this.changeStatusForRequest(requestId,"canceled");
+    public boolean cancelRequestForRestaurant(Integer requestId) throws NotFoundException {
+        return this.changeStatusForRequest(requestId, "canceled");
 
     }
 
     private boolean changeStatusForRequest(Integer requestId, String status) throws NotFoundException {
-        RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
+        RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId)
+                .orElseThrow(NotFoundException::new);
         requestForRestaurantEntity.setStatus(status);
         requestForRestaurantRepository.save(requestForRestaurantEntity);
         return true;

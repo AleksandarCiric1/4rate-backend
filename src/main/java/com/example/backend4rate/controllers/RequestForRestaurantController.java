@@ -46,7 +46,7 @@ public class RequestForRestaurantController {
     }
 
     @DeleteMapping("/cancelRequest/{id}")
-    public boolean cancelRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
+    public boolean cancelRequestForRestaurant(@PathVariable Integer id) throws NotFoundException {
         return requestForRestaurantService.cancelRequestForRestaurant(id);
     }
 
@@ -60,7 +60,7 @@ public class RequestForRestaurantController {
         }
     }
 
-    @PostMapping("/approveRequest/{requestId}")
+    @PutMapping("/approveRequest/{requestId}")
     public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer requestId)
             throws NotFoundException {
         if (requestForRestaurantService.approveRequestForRestaurant(requestId)) {

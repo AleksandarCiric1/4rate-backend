@@ -36,7 +36,9 @@ public class ReportController {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            reportService.generateReport(byteArrayOutputStream, restaurantId, Months.valueOf(report.getMonth()), report.getYear());
+            reportService.generateReport(byteArrayOutputStream, restaurantId,
+                    Months.fromNumber(Integer.parseInt(report.getMonth())),
+                    report.getYear());
 
             ByteArrayResource resource = new ByteArrayResource(byteArrayOutputStream.toByteArray());
 
@@ -46,6 +48,7 @@ public class ReportController {
 
             return ResponseEntity.ok().headers(headers).contentLength(resource.contentLength()).body(resource);
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

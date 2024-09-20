@@ -224,9 +224,4 @@ public class UserAccountService implements UserAccountServiceInterface {
         userAccountRepository.saveAndFlush(userAccountEntity);
         return true;
     }
-
-    @Override 
-    public Long numOfCreatedAccountsByMonth(Integer month, Integer year){
-        return userAccountRepository.countUserAccountsByMonthAndYear(month, year);
-    }
 }

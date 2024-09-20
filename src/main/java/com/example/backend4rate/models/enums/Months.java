@@ -13,4 +13,13 @@ public enum Months {
     public int getNumberOfMonth() {
         return brojMeseca;
     }
+
+    public static Months fromNumber(int monthNumber) {
+        for (Months month : Months.values()) {
+            if (month.getNumberOfMonth() == monthNumber) {
+                return month;
+            }
+        }
+        throw new IllegalArgumentException("Invalid month number: " + monthNumber);
+    }
 }

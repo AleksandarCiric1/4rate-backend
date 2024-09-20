@@ -24,7 +24,6 @@ import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ReservationServiceInterface;
 
-
 @Service
 public class ReservationService implements ReservationServiceInterface {
     ReservationRepository reservationRepository;
@@ -38,12 +37,13 @@ public class ReservationService implements ReservationServiceInterface {
     public ReservationService(ReservationRepository reservationRepository, GuestRepository guestRepository,
             RestaurantRepository restaurantRepository, ModelMapper modelMapper,
             RestaurantPhoneRepository restaurantPhoneRepository, CategoryRepository categoryRepository,
-            RestaurantCategoryRepository restaurantCategoryRepository, ReservationAvailabilityService reservationAvailabilityService) {
+            RestaurantCategoryRepository restaurantCategoryRepository,
+            ReservationAvailabilityService reservationAvailabilityService) {
         this.reservationRepository = reservationRepository;
         this.modelMapper = modelMapper;
         this.guestRepository = guestRepository;
         this.restaurantRepository = restaurantRepository;
-        this.reservationAvailabilityService=reservationAvailabilityService;
+        this.reservationAvailabilityService = reservationAvailabilityService;
     }
 
     @Override
@@ -51,8 +51,6 @@ public class ReservationService implements ReservationServiceInterface {
         return modelMapper.map(reservationRepository.findById(reservationId).orElseThrow(NotFoundException::new),
                 Reservation.class);
     }
-
-   
 
     @Override
     public Reservation makeReservation(ReservationRequest reservation)
@@ -65,7 +63,7 @@ public class ReservationService implements ReservationServiceInterface {
         if (reservationRepository.findByGuestAndRestaurantAndDate(guestEntity, restaurantEntity, reservation.getDate())
                 .isPresent())
             throw new DuplicateReservationException("Reservation on this date is already made!");
-        
+
         reservationEntity.setGuest(guestEntity);
         reservationEntity.setRestaurant(restaurantEntity);
         reservationEntity.setTimeSloth(reservation.getTime().toLocalTime().getHour());
@@ -74,7 +72,7 @@ public class ReservationService implements ReservationServiceInterface {
         reservationEntity.setStatus("pending");
         reservationEntity = reservationRepository.saveAndFlush(reservationEntity);
         return modelMapper.map(reservationEntity, Reservation.class);
-    
+
     }
 
     @Override
@@ -82,7 +80,10 @@ public class ReservationService implements ReservationServiceInterface {
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestId);
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("Guest hasn't made any reservations! ");
-        return reservationEntityList.stream().filter(l -> (l.getStatus().equals("pending") || l.getStatus().equals("approved")) && l.getDate().after(new Date())).map(l -> modelMapper.map(l, Reservation.class))
+        return reservationEntityList.stream()
+                .filter(l -> (l.getStatus().equals("pending") || l.getStatus().equals("approved"))
+                        && l.getDate().after(new Date()))
+                .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
 
@@ -91,39 +92,43 @@ public class ReservationService implements ReservationServiceInterface {
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("There are no reservations for this restaurant!");
-        return reservationEntityList.stream().filter(l -> !l.getStatus().equals("denied") && l.getDate().after(new Date())).map(l -> modelMapper.map(l, Reservation.class))
+        return reservationEntityList.stream()
+                .filter(l -> !l.getStatus().equals("denied") && l.getDate().after(new Date()))
+                .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public Reservation approveReservation(Integer reservationId) throws NotFoundException, ReservationsFullException {
-       ReservationEntity reservationEntity = reservationRepository.findById(reservationId).orElseThrow(NotFoundException::new);
-       if(reservationAvailabilityService.isAvailable(reservationEntity)){
-       reservationEntity.setStatus("approved");
-       reservationRepository.saveAndFlush(reservationEntity);
-       reservationAvailabilityService.createReservationAvailability(reservationEntity);
-       return modelMapper.map(reservationEntity, Reservation.class);
-       }
-    else throw new ReservationsFullException("This appointment is unavailable! ");
+        ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
+                .orElseThrow(NotFoundException::new);
+        if (reservationAvailabilityService.isAvailable(reservationEntity)) {
+            reservationEntity.setStatus("approved");
+            reservationRepository.saveAndFlush(reservationEntity);
+            reservationAvailabilityService.createReservationAvailability(reservationEntity);
+            return modelMapper.map(reservationEntity, Reservation.class);
+        } else
+            throw new ReservationsFullException("This appointment is unavailable! ");
 
     }
 
     @Override
     public Reservation denyReservation(Integer reservationId) throws NotFoundException {
-        ReservationEntity reservationEntity = reservationRepository.findById(reservationId).orElseThrow(NotFoundException::new);
+        ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
+                .orElseThrow(NotFoundException::new);
         reservationEntity.setStatus("denied");
         reservationRepository.saveAndFlush(reservationEntity);
-        //TO-DO Obavijesti gosta o rezultatu obrade
+        // TO-DO Obavijesti gosta o rezultatu obrade
         return modelMapper.map(reservationEntity, Reservation.class);
     }
 
     @Override
     public Reservation cancelReservation(Integer reservationId) throws NotFoundException {
-        ReservationEntity reservationEntity = reservationRepository.findById(reservationId).orElseThrow(NotFoundException::new);
+        ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
+                .orElseThrow(NotFoundException::new);
         reservationEntity.setStatus("canceled");
         reservationRepository.saveAndFlush(reservationEntity);
-        //TO-DO Obavijesti gosta o rezultatu obrade
+        // TO-DO Obavijesti gosta o rezultatu obrade
         return modelMapper.map(reservationEntity, Reservation.class);
 
     }
