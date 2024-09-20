@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Report {
-    private Integer month;
+    private String month;
     private Integer year;
 }

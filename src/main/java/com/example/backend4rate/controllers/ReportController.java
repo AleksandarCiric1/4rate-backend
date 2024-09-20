@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.Report;
+import com.example.backend4rate.models.enums.Months;
 import com.example.backend4rate.services.impl.ReportService;
 
 @RestController
@@ -35,7 +36,7 @@ public class ReportController {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            reportService.getReport(byteArrayOutputStream, restaurantId, report.getMonth(), report.getYear());
+            reportService.getReport(byteArrayOutputStream, restaurantId, Months.valueOf(report.getMonth()), report.getYear());
 
             ByteArrayResource resource = new ByteArrayResource(byteArrayOutputStream.toByteArray());
 

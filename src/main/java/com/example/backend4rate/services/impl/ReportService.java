@@ -13,7 +13,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PdfPCell;
 
-import org.springframework.security.config.method.MethodSecurityMetadataSourceBeanDefinitionParser;
 import org.springframework.stereotype.Service;
 
 import com.example.backend4rate.exceptions.BadRequestException;
@@ -21,6 +20,7 @@ import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.entities.MonthlyReportEntity;
 import com.example.backend4rate.models.entities.ReservationEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
+import com.example.backend4rate.models.enums.Months;
 import com.example.backend4rate.repositories.MonthlyReportRepository;
 import com.example.backend4rate.repositories.ReservationRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
@@ -41,10 +41,10 @@ public class ReportService implements ReportServiceInterface{
 
     @SuppressWarnings("deprecation")
     @Override
-    public void getReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Integer month, Integer year) throws BadRequestException, NotFoundException, IOException{
+    public void getReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month, Integer year) throws BadRequestException, NotFoundException, IOException{
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException());
         if(year < restaurantEntity.getCreatedAt().getYear() 
-        || (year == restaurantEntity.getCreatedAt().getYear() && month < restaurantEntity.getCreatedAt().getMonth())){
+        || (year == restaurantEntity.getCreatedAt().getYear() && month.getBrojMeseca() < restaurantEntity.getCreatedAt().getMonth())){
             throw new BadRequestException();
         }
         Document document = new Document();
@@ -52,8 +52,8 @@ public class ReportService implements ReportServiceInterface{
 
         List<ReservationEntity> reservations = reservationRepository.findAllByRestaurant_Id(restaurantId);
         Long numOfReservations = reservations.stream().count();
-        List<ReservationEntity> confirmedReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "confirmed");
-        Long numOfConfirmedReservations = confirmedReservations.stream().count();
+        List<ReservationEntity> approvedReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "approved");
+        Long numOfApprovedReservations = approvedReservations.stream().count();
         List<ReservationEntity> deniedReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "denied");
         Long numOfDeniedReservations = deniedReservations.stream().count();
         List<ReservationEntity> canceledReservations = reservationRepository.findAllByRestaurant_IdAndStatus(restaurantId, "canceled");
@@ -66,7 +66,7 @@ public class ReportService implements ReportServiceInterface{
         document.open();
 
         Font titleFont  = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
-        Paragraph title = new Paragraph(month + "Report", titleFont);
+        Paragraph title = new Paragraph(month.toString() + " report", titleFont);
         title.setAlignment(Element.ALIGN_LEFT);
         document.add(title);
         document.add(Chunk.NEWLINE);
@@ -88,7 +88,7 @@ public class ReportService implements ReportServiceInterface{
 
         
         addTableCell(table, numOfReservations.toString(), font);
-        addTableCell(table, numOfConfirmedReservations.toString(), font);
+        addTableCell(table, numOfApprovedReservations.toString(), font);
         addTableCell(table, numOfDeniedReservations.toString(), font);
         addTableCell(table, numOfCanceledReservations.toString(), font);
         addTableCell(table, numOfPendingReservations.toString(), font);
@@ -127,7 +127,7 @@ public class ReportService implements ReportServiceInterface{
         MonthlyReportEntity monthlyReportEntity = new MonthlyReportEntity();
         monthlyReportEntity.setId(null);
         monthlyReportEntity.setDate(date);
-        monthlyReportEntity.setMonth(month);
+        monthlyReportEntity.setMonth(month.toString());
         monthlyReportEntity.setNumberOfReservations(numOfReservations);
         monthlyReportEntity.setRestaurant(restaurantEntity);
         monthlyReportRepository.save(monthlyReportEntity);

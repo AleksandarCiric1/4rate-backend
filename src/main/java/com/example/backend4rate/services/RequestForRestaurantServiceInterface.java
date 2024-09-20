@@ -1,13 +1,10 @@
 package com.example.backend4rate.services;
 
 import com.example.backend4rate.exceptions.NotFoundException;
-import com.example.backend4rate.models.dto.ProcessRequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.RequestBody;
 
 public interface RequestForRestaurantServiceInterface {
     RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger)
@@ -21,5 +18,5 @@ public interface RequestForRestaurantServiceInterface {
 
     List<RequestForRestaurantResponse> getAllRequestForRestaurant();
 
-    boolean cancelRequestForRestaurant(Integer id);
+    boolean cancelRequestForRestaurant(Integer id) throws NotFoundException;
 }

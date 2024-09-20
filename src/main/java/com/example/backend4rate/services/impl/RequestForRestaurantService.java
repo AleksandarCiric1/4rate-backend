@@ -1,15 +1,12 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.backend4rate.exceptions.NotFoundException;
-import com.example.backend4rate.models.dto.ProcessRequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import com.example.backend4rate.models.entities.ManagerEntity;
@@ -41,6 +38,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         RequestForRestaurantEntity requestForRestaurantEntity = modelMapper.map(request,
                 RequestForRestaurantEntity.class);
         requestForRestaurantEntity.setId(null);
+        requestForRestaurantEntity.setStatus("panding");
 
         ManagerEntity managerEntity = managerRepository.findByUserAccountId(userAccountId);
         if (managerEntity == null) {
@@ -54,37 +52,34 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
-        RequestForRestaurantResponse request = this.getRequestForRestaurant(requestId);
-        ManagerEntity managerEntity = managerRepository.findById(request.getManagerId())
+        RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
+        ManagerEntity managerEntity = managerRepository.findById(requestForRestaurantEntity.getManager().getId())
                 .orElseThrow(NotFoundException::new);
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
-        restaurantEntity.setName(request.getName());
-        restaurantEntity.setWorkTime(request.getWorkTime());
-        restaurantEntity.setDescription(request.getDescription());
+        restaurantEntity.setName(requestForRestaurantEntity.getName());
+        restaurantEntity.setWorkTime(requestForRestaurantEntity.getWorkTime());
+        restaurantEntity.setDescription(requestForRestaurantEntity.getDescription());
         restaurantEntity.setId(null);
         restaurantEntity.setStatus("active");
 
-        if (!this.deleteRequest(requestId)) {
-            return false;
-        }
-
         restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
         managerEntity.setRestaurant(restaurantEntity);
-        managerRepository.saveAndFlush(managerEntity);
-
+        managerRepository.save(managerEntity);
+        requestForRestaurantEntity.setStatus("approved");
+        requestForRestaurantRepository.save(requestForRestaurantEntity);
         return true;
     }
 
     @Override
     public boolean denyRequestForRestaurant(Integer requestId) throws NotFoundException {
-        return this.deleteRequest(requestId);
+        return this.changeStatusForRequest(requestId, "denied");
     }
 
     @Override
-    public RequestForRestaurantResponse getRequestForRestaurant(Integer id) throws NotFoundException {
-        return modelMapper.map(requestForRestaurantRepository.findById(id).orElseThrow(NotFoundException::new),
+    public RequestForRestaurantResponse getRequestForRestaurant(Integer requestId) throws NotFoundException {
+        return modelMapper.map(requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new),
                 RequestForRestaurantResponse.class);
     }
 
@@ -95,18 +90,16 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public boolean cancelRequestForRestaurant(Integer id) {
-        return this.deleteRequest(id);
+    public boolean cancelRequestForRestaurant(Integer requestId) throws NotFoundException{
+        return this.changeStatusForRequest(requestId,"canceled");
+
     }
 
-    private boolean deleteRequest(Integer id) {
-        Optional<RequestForRestaurantEntity> requestOptional = requestForRestaurantRepository.findById(id);
-        if (requestOptional.isPresent()) {
-            requestForRestaurantRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
+    private boolean changeStatusForRequest(Integer requestId, String status) throws NotFoundException {
+        RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
+        requestForRestaurantEntity.setStatus(status);
+        requestForRestaurantRepository.save(requestForRestaurantEntity);
+        return true;
     }
 
 }

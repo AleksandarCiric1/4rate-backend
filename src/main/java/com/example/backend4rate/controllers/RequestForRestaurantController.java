@@ -46,7 +46,7 @@ public class RequestForRestaurantController {
     }
 
     @DeleteMapping("/cancelRequest/{id}")
-    public boolean cancelRequestForRestaurant(@PathVariable Integer id) {
+    public boolean cancelRequestForRestaurant(@PathVariable Integer id) throws NotFoundException{
         return requestForRestaurantService.cancelRequestForRestaurant(id);
     }
 

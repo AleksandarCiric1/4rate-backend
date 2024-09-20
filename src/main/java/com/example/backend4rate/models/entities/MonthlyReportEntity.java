@@ -27,7 +27,7 @@ public class MonthlyReportEntity implements BaseEntity<Integer>{
 
     @Basic
     @Column(name = "month")
-    private Integer month;
+    private String month;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)

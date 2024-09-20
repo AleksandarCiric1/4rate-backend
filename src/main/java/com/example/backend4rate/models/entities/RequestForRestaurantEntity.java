@@ -27,6 +27,10 @@ public class RequestForRestaurantEntity implements BaseEntity<Integer>{
     @Basic
     @Column(name = "work_time", nullable = false)
     private String workTime;
+
+    @Basic
+    @Column(name = "status", nullable = false)
+    private String status;
     
     @OneToOne
     @JoinColumn(name = "manager_id", referencedColumnName =  "id")
