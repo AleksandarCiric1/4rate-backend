@@ -23,11 +23,10 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
        List<ReservationEntity> findAllByRestaurant_IdAndStatus(Integer restaurantId, String status);
 
-       // void deleteByDateBefore(LocalDateTime dateTime);
-       @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +
-                     "MONTH(r.date) = :month AND YEAR(r.date) = :year")
-       Long countReservationsByRestaurantAndMonthAndYear(@Param("restaurantId") Integer restaurantId,
-                     @Param("month") Integer month,
-                     @Param("year") Integer year);
-
+    @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +
+           "MONTH(r.date) = :month AND YEAR(r.date) = :year")
+    Long countReservationsByRestaurantAndMonthAndYear(@Param("restaurantId") Integer restaurantId, 
+                                                      @Param("month") Integer month, 
+                                                      @Param("year") Integer year);
+    
 }

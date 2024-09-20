@@ -4,7 +4,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.models.dto.Reservation;
+import com.example.backend4rate.models.dto.ReservationRequest;
 import com.example.backend4rate.services.impl.ReservationService;
 
 import java.util.List;
@@ -44,12 +46,12 @@ public class ReservationController {
     }
 
     @PostMapping("/makeReservation")
-    public Reservation makeReservation(@RequestBody Reservation reservation) throws NotFoundException, DuplicateReservationException{
+    public Reservation makeReservation(@RequestBody ReservationRequest reservation) throws NotFoundException, DuplicateReservationException, ReservationsFullException{
         return reservationService.makeReservation(reservation);
     }
 
     @PutMapping("/approveReservation/{reservationId}")
-    public Reservation apporoveReservation(@PathVariable Integer reservationId) throws NotFoundException{
+    public Reservation apporoveReservation(@PathVariable Integer reservationId) throws NotFoundException, ReservationsFullException{
         return reservationService.approveReservation(reservationId);
     }
 

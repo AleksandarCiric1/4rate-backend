@@ -1,5 +1,6 @@
 package com.example.backend4rate.models.dto;
 
+
 import lombok.Data;
 
 @Data
@@ -8,5 +9,7 @@ public class RequestForRestaurantResponse {
     private String name;
     private String workTime;
     private String description;
+    private Integer capacity;
+
     private Integer managerId;
 }

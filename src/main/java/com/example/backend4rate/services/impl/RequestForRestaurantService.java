@@ -23,6 +23,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
+    //private final ReservationAvailabilityService reservationAvailabilityService;
 
     public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository,
             ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository) {
@@ -30,6 +31,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.restaurantRepository = restaurantRepository;
+        //this.reservationAvailabilityService=reservationAvailabilityService;
     }
 
     @Override
@@ -46,29 +48,29 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         }
         requestForRestaurantEntity.setManager(managerEntity);
         requestForRestaurantEntity = requestForRestaurantRepository.saveAndFlush(requestForRestaurantEntity);
-
         return modelMapper.map(requestForRestaurantEntity, RequestForRestaurantResponse.class);
     }
 
     @Override
     public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
-        RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
-        ManagerEntity managerEntity = managerRepository.findById(requestForRestaurantEntity.getManager().getId())
+        RequestForRestaurantEntity request = requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new);
+        ManagerEntity managerEntity = managerRepository.findById(request.getManager().getId())
                 .orElseThrow(NotFoundException::new);
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
-        restaurantEntity.setName(requestForRestaurantEntity.getName());
-        restaurantEntity.setWorkTime(requestForRestaurantEntity.getWorkTime());
-        restaurantEntity.setDescription(requestForRestaurantEntity.getDescription());
+        restaurantEntity.setName(request.getName());
+        restaurantEntity.setWorkTime(request.getWorkTime());
+        restaurantEntity.setDescription(request.getDescription());
+        restaurantEntity.setCapacity(request.getCapacity());
         restaurantEntity.setId(null);
         restaurantEntity.setStatus("active");
 
         restaurantEntity = restaurantRepository.saveAndFlush(restaurantEntity);
         managerEntity.setRestaurant(restaurantEntity);
         managerRepository.save(managerEntity);
-        requestForRestaurantEntity.setStatus("approved");
-        requestForRestaurantRepository.save(requestForRestaurantEntity);
+        request.setStatus("approved");
+        requestForRestaurantRepository.save(request);
         return true;
     }
 

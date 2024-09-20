@@ -25,6 +25,10 @@ public class RequestForRestaurantEntity implements BaseEntity<Integer>{
     private String description;
 
     @Basic
+    @Column(name = "capacity", nullable = false)
+    private Integer capacity;
+
+    @Basic
     @Column(name = "work_time", nullable = false)
     private String workTime;
 

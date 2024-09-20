@@ -7,4 +7,5 @@ public class RequestForRestaurant{
     private String name;
     private String workTime;
     private String description;
+    private Integer capacity;
 }

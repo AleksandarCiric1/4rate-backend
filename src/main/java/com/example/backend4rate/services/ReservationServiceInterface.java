@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.models.dto.Reservation;
+import com.example.backend4rate.models.dto.ReservationRequest;
 
 public interface ReservationServiceInterface {
 
@@ -14,12 +16,10 @@ public interface ReservationServiceInterface {
     List<Reservation> getAllGuestReservations(Integer guestId) throws NotFoundException;
 
     List<Reservation> getAllRestaurantReservations(Integer restaurant) throws NotFoundException;
+    
+    Reservation makeReservation(ReservationRequest reservation) throws NotFoundException, DuplicateReservationException, ReservationsFullException;
 
-    //void deleteReservation(Integer reservationId) throws NotFoundException;
-
-    Reservation makeReservation(Reservation reservation) throws NotFoundException, DuplicateReservationException;
-
-    Reservation approveReservation(Integer reservationId) throws NotFoundException;
+    Reservation approveReservation(Integer reservationId) throws NotFoundException, ReservationsFullException;
 
     Reservation denyReservation(Integer reservationId) throws NotFoundException;
 
