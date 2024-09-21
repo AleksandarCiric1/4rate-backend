@@ -13,6 +13,7 @@ import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.EmptyResultDataAccessException;
 import com.example.backend4rate.exceptions.InvalidGradeException;
+import com.example.backend4rate.exceptions.ManagerBlockedException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
@@ -87,5 +88,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleReservationsFullException(ReservationsFullException ex){
         logService.info(ex.getMessage(), ex.getClassName());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ManagerBlockedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleManagerBlockedException(ManagerBlockedException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ManagerBlockedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleManagerBlockedException(ManagerBlockedException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ManagerBlockedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleManagerBlockedException(ManagerBlockedException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 }

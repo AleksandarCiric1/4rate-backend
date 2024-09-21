@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend4rate.exceptions.ManagerBlockedException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.ProcessRequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
@@ -62,7 +63,7 @@ public class RequestForRestaurantController {
 
     @PutMapping("/approveRequest/{requestId}")
     public ResponseEntity<?> approveRequestForRestaurant(@PathVariable Integer requestId)
-            throws NotFoundException {
+            throws NotFoundException, ManagerBlockedException {
         if (requestForRestaurantService.approveRequestForRestaurant(requestId)) {
             return ResponseEntity.ok().build();
         } else {
