@@ -95,4 +95,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleManagerBlockedException(ManagerBlockedException ex){
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(ManagerBlockedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleManagerBlockedException(ManagerBlockedException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
 }
