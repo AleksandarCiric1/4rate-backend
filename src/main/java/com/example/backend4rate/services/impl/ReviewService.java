@@ -45,14 +45,14 @@ public class ReviewService implements ReviewServiceInterface {
               // spakovano u review dto?
     public ReviewResponse addReview(Integer restaurantId, Review review) throws NotFoundException {
         GuestEntity guestEntity = guestRepository.findByUserAccount_Id(review.getUserAccountId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReviewService.class.getName()));
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setGuest(guestEntity);
         reviewEntity.setId(null);
         reviewEntity.setCreatedAt(new Date());
         reviewEntity.setComment(review.getComment());
         reviewEntity.setGrade(review.getGrade());
-        reviewEntity.setRestaurant(restaurantRepository.findById(restaurantId).orElseThrow(NotFoundException::new));
+        reviewEntity.setRestaurant(restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException(ReviewService.class.getName())));
         reviewEntity = reviewRepository.saveAndFlush(reviewEntity);
 
         return modelMapper.map(review, ReviewResponse.class);
@@ -65,14 +65,14 @@ public class ReviewService implements ReviewServiceInterface {
 
     @Override
     public ReviewResponse getReviewById(Integer reviewId) throws NotFoundException {
-        return modelMapper.map(reviewRepository.findById(reviewId).orElseThrow(NotFoundException::new),
+        return modelMapper.map(reviewRepository.findById(reviewId).orElseThrow(() -> new NotFoundException(ReviewService.class.getName())),
                 ReviewResponse.class);
     }
 
     @Override
     public List<ReviewResponse> getAllReviews(Integer restaurantId) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReviewService.class.getName()));
         return reviewRepository.findByRestaurant(restaurantEntity).stream()
                 .map(l -> modelMapper.map(l, ReviewResponse.class))
                 .collect(Collectors.toList());

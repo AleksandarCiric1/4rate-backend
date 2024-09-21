@@ -40,11 +40,11 @@ public class RateService implements RateServiceInterface {
     @Override
     public Grade addRating(Grade grade) throws InvalidGradeException, NotFoundException {
         if (grade.getValue() > 5 || grade.getValue() < 1)
-            throw new InvalidGradeException("Grade " + grade.getValue() + " is not in allowed range!");
+            throw new InvalidGradeException("Grade " + grade.getValue() + " is not in allowed range!", RateService.class.getName());
         if (!guestRepository.findById(grade.getGuestId()).isPresent())
-            throw new NotFoundException();
+            throw new NotFoundException(RateService.class.getName());
         if (!restaurantRepository.findById(grade.getRestaurantId()).isPresent())
-            throw new NotFoundException();
+            throw new NotFoundException(RateService.class.getName());
         Integer vGrade = null;
         if (!gradeRepository.findByGuestId(grade.getGuestId()).stream()
                 .noneMatch(g -> g.getRestaurant().getId().equals(grade.getRestaurantId())))

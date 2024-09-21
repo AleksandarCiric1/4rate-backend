@@ -40,7 +40,7 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public boolean activateCategory(Integer id) throws NotFoundException {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Couldn't found category!"));
+                .orElseThrow(() -> new NotFoundException("Couldn't found category!", CategoryService.class.getName()));
 
         categoryEntity.setStatus(true);
         categoryRepository.saveAndFlush(categoryEntity);
@@ -50,7 +50,7 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public boolean blockCategory(Integer id) throws NotFoundException {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Couldn't found category!"));
+                .orElseThrow(() -> new NotFoundException("Couldn't found category!", CategoryService.class.getName()));
 
         categoryEntity.setStatus(false);
         categoryRepository.saveAndFlush(categoryEntity);
@@ -71,7 +71,7 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public Category editCategory(Category category) throws NotFoundException {
         CategoryEntity categoryEntity = categoryRepository.findById(category.getId())
-                .orElseThrow(() -> new NotFoundException("Couldn't found category"));
+                .orElseThrow(() -> new NotFoundException("Couldn't found category", CategoryService.class.getName()));
 
         modelMapper.map(category, categoryEntity);
 

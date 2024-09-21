@@ -1,10 +1,8 @@
 package com.example.backend4rate.services.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Path;
@@ -15,14 +13,12 @@ import java.util.UUID;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.entities.ImageEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
-import com.example.backend4rate.models.entities.RestaurantPhoneEntity;
 import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.ImageRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
@@ -37,17 +33,19 @@ public class ImageService implements ImageServiceInterface {
     private final ImageRepository imageRepository;
     private final RestaurantRepository restaurantRepository;
     private final UserAccountRepository userAccountRepository;
+    private final LogService logService;
 
     public ImageService(ImageRepository imageRepository, RestaurantRepository restaurantRepository,
-            UserAccountRepository userAccountRepository) {
+            UserAccountRepository userAccountRepository, LogService logService) {
         this.imageRepository = imageRepository;
         this.restaurantRepository = restaurantRepository;
         this.userAccountRepository = userAccountRepository;
+        this.logService = logService;
     }
 
     @Override
     public void uploadImage(List<MultipartFile> imageFiles, Integer id) throws IOException, NotFoundException {
-        RestaurantEntity restaurantEntity = restaurantRepository.findById(id).orElseThrow(NotFoundException::new);
+        RestaurantEntity restaurantEntity = restaurantRepository.findById(id).orElseThrow(() -> new NotFoundException(ImageService.class.getName()));
         deleteImagesForRestaurant(restaurantEntity);
         for (MultipartFile imageFile : imageFiles) {
             String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
@@ -105,13 +103,14 @@ public class ImageService implements ImageServiceInterface {
 
     @Override
     public void deleteImage(Integer id) throws NotFoundException, IOException {
-        ImageEntity imageEntity = imageRepository.findById(id).orElseThrow(NotFoundException::new);
+        ImageEntity imageEntity = imageRepository.findById(id).orElseThrow(() -> new NotFoundException(ImageService.class.getName()));
 
         String filePath = pathToRestaurant + imageEntity.getRestaurant().getId() + "/" + imageEntity.getImageUrl();
         Path path = Path.of(filePath);
         try {
             Files.delete(path);
         } catch (IOException ex) {
+            logService.info(ex.getMessage(), ImageService.class.getName());
         }
 
         imageRepository.deleteById(id);
@@ -119,7 +118,7 @@ public class ImageService implements ImageServiceInterface {
 
     @Override
     public String uploadAvatar(MultipartFile imageFile, Integer id) throws IOException, NotFoundException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(ImageService.class.getName()));
         String avatar = userAccountEntity.getAvatarUrl();
 
         if (avatar != null) {
@@ -142,7 +141,7 @@ public class ImageService implements ImageServiceInterface {
 
     @Override
     public Resource getAvatar(Integer id) throws NotFoundException, MalformedURLException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(ImageService.class.getName()));
         String avatar = userAccountEntity.getAvatarUrl();
         if (avatar != null) {
             Path path = Paths.get(pathToAvatar).resolve(avatar);
@@ -153,7 +152,7 @@ public class ImageService implements ImageServiceInterface {
 
     @Override
     public void deleteAvatar(Integer id) throws NotFoundException, IOException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(ImageService.class.getName()));
         String avatar = userAccountEntity.getAvatarUrl();
 
         if (avatar != null) {
@@ -162,6 +161,7 @@ public class ImageService implements ImageServiceInterface {
             try {
                 Files.delete(path);
             } catch (IOException ex) {
+                logService.info(ex.getMessage(), ImageService.class.getName());
             }
         }
 
