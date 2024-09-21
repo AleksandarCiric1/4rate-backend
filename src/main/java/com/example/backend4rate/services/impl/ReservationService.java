@@ -1,5 +1,6 @@
 package com.example.backend4rate.services.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -147,9 +148,10 @@ public class ReservationService implements ReservationServiceInterface {
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("There are no reservations for this date!");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return reservationEntityList.stream()
                 .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase())
-                        && l.getDate().compareTo(reservationDate) == 0)
+                        && sdf.format(l.getDate()).compareTo(sdf.format(reservationDate)) == 0)
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
