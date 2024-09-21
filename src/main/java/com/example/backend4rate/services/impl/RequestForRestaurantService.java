@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.backend4rate.exceptions.ManagerBlockedException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
@@ -53,11 +54,12 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     }
 
     @Override
-    public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
+    public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException, ManagerBlockedException {
         RequestForRestaurantEntity request = requestForRestaurantRepository.findById(requestId)
                 .orElseThrow(NotFoundException::new);
         ManagerEntity managerEntity = managerRepository.findById(request.getManager().getId())
                 .orElseThrow(NotFoundException::new);
+        if("blocked".equals(managerEntity.getUserAccount().getStatus())) throw new ManagerBlockedException(); ;
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 

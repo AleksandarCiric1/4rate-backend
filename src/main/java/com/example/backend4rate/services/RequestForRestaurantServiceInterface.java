@@ -1,5 +1,6 @@
 package com.example.backend4rate.services;
 
+import com.example.backend4rate.exceptions.ManagerBlockedException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.models.dto.RequestForRestaurant;
 import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
@@ -10,7 +11,7 @@ public interface RequestForRestaurantServiceInterface {
     RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger)
             throws NotFoundException;
 
-    boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException;
+    boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException, ManagerBlockedException;
 
     boolean denyRequestForRestaurant(Integer requestId) throws NotFoundException;
 
