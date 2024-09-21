@@ -1,7 +1,6 @@
 package com.example.backend4rate.services.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,11 +67,11 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public boolean blockRestaurant(RestaurantBlock restaurantToBlock) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantToBlock.getId())
-                .orElseThrow(() -> new NotFoundException("Couldn't found restaurant!"));
+                .orElseThrow(() -> new NotFoundException("Couldn't found restaurant!", RestaurantService.class.getName()));
 
         ManagerEntity managerEntity = managerRepository.findByRestaurantId(restaurantEntity.getId());
         UserAccountEntity userAccountEntity = userAccountRepository.findById(managerEntity.getUserAccount().getId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RestaurantService.class.getName()));
         emailService.sendEmail(userAccountEntity.getEmail(), subject, body);
 
         restaurantEntity.setStatus("blocked");
@@ -92,7 +91,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public Restaurant getRestaurantById(Integer id) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RestaurantService.class.getName()));
 
         return modelMapper.map(restaurantEntity, Restaurant.class);
     }
@@ -100,7 +99,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public boolean updateRestaurant(UpdateRestaurant updateRestaurant) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(updateRestaurant.getId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RestaurantService.class.getName()));
 
         restaurantEntity.setAddress(updateRestaurant.getAddress());
         restaurantEntity.setCity(updateRestaurant.getCity());
@@ -119,7 +118,7 @@ public class RestaurantService implements RestaurantServiceInterface {
             RestaurantCategoryEntity restaurantCategoryEntity = new RestaurantCategoryEntity();
             restaurantCategoryEntity.setRestaurant(restaurantEntity);
             CategoryEntity categoryEntity = categoryRepository.findById(Integer.valueOf(elem))
-                    .orElseThrow(NotFoundException::new);
+                    .orElseThrow(() -> new NotFoundException(RestaurantService.class.getName()));
             restaurantCategoryEntity.setCategory(categoryEntity);
             restaurantCategoryRepository.saveAndFlush(restaurantCategoryEntity);
         }

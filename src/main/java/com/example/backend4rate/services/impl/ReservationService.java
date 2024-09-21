@@ -48,7 +48,7 @@ public class ReservationService implements ReservationServiceInterface {
 
     @Override
     public Reservation getReservation(Integer reservationId) throws NotFoundException {
-        return modelMapper.map(reservationRepository.findById(reservationId).orElseThrow(NotFoundException::new),
+        return modelMapper.map(reservationRepository.findById(reservationId).orElseThrow(() -> new NotFoundException(ReservationService.class.getName())),
                 Reservation.class);
     }
 
@@ -57,9 +57,9 @@ public class ReservationService implements ReservationServiceInterface {
             throws NotFoundException, DuplicateReservationException, ReservationsFullException {
         ReservationEntity reservationEntity = modelMapper.map(reservation, ReservationEntity.class);
         GuestEntity guestEntity = guestRepository.findByUserAccount_Id(reservation.getUserAccountId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         RestaurantEntity restaurantEntity = restaurantRepository.findById(reservation.getRestaurantId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         if (reservationRepository.findByGuestAndRestaurantAndDate(guestEntity, restaurantEntity, reservation.getDate())
                 .isPresent())
             throw new DuplicateReservationException("Reservation on this date is already made!");
@@ -77,7 +77,7 @@ public class ReservationService implements ReservationServiceInterface {
 
     @Override
     public List<Reservation> getAllGuestReservations(Integer userAccountId) throws NotFoundException {
-        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId).orElseThrow(NotFoundException::new);
+        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId).orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestEntity.getId());
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("Guest hasn't made any reservations! ");
@@ -102,7 +102,7 @@ public class ReservationService implements ReservationServiceInterface {
     @Override
     public Reservation approveReservation(Integer reservationId) throws NotFoundException, ReservationsFullException {
         ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         if (reservationAvailabilityService.isAvailable(reservationEntity)) {
             reservationEntity.setStatus(ReservationStatus.APPROVED.name().toLowerCase());
             reservationRepository.saveAndFlush(reservationEntity);
@@ -116,7 +116,7 @@ public class ReservationService implements ReservationServiceInterface {
     @Override
     public Reservation denyReservation(Integer reservationId) throws NotFoundException {
         ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         reservationEntity.setStatus(ReservationStatus.DENIED.name().toLowerCase());
         reservationRepository.saveAndFlush(reservationEntity);
         // TODO Obavijesti gosta o rezultatu obrade
@@ -126,7 +126,7 @@ public class ReservationService implements ReservationServiceInterface {
     @Override
     public Reservation cancelReservation(Integer reservationId) throws NotFoundException {
         ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         if(ReservationStatus.APPROVED.name().toLowerCase().equals(reservationEntity.getStatus()))
         {
             reservationEntity.setStatus(ReservationStatus.CANCELED.name().toLowerCase());

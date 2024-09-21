@@ -3,8 +3,6 @@ package com.example.backend4rate.services.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 import org.modelmapper.ModelMapper;
@@ -80,7 +78,7 @@ public class UserAccountService implements UserAccountServiceInterface {
             administratorEntity.setId(null);
             administratorEntity = administratorRepository.saveAndFlush(administratorEntity);
         } else {
-            throw new BadRequestException();
+            throw new BadRequestException(UserAccountService.class.getName());
         }
         return modelMapper.map(userAccountEntity, User.class);
     }
@@ -96,7 +94,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Override
     public boolean changePassword(PasswordChange passwordChange) throws NotFoundException, UnauthorizedException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(passwordChange.getUserAccountId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if (passwordEncoder.matches(passwordChange.getCurrentPassword(), userAccountEntity.getPassword())) {
             userAccountEntity.setPassword(passwordEncoder.encode(passwordChange.getNewPassword()));
             userAccountRepository.save(userAccountEntity);
@@ -107,10 +105,10 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public UserAccountEntity confirmAccount(Integer id) throws NotFoundException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
 
         if (userAccountEntity == null)
-            throw new NotFoundException();
+            throw new NotFoundException(UserAccountService.class.getName());
 
         if (!userAccountEntity.isConfirmed()) {
             userAccountEntity.setConfirmed(true);
@@ -124,14 +122,14 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Override
     public User getUserByUserAccountId(Integer id) throws NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         User user = modelMapper.map(userAccountEntity, User.class);
         return user;
     }
 
     @Override
     public boolean blockUserAccount(Integer id) throws NotFoundException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         userAccountEntity.setStatus("block");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
         if (userAccountEntity.getStatus().equals("block"))
@@ -142,9 +140,9 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public boolean suspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if ("block".equals(userAccountEntity.getStatus())) {
-            throw new BadRequestException();
+            throw new BadRequestException(UserAccountService.class.getName());
         }
         userAccountEntity.setStatus("suspended");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
@@ -155,9 +153,9 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     public boolean unsuspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(NotFoundException::new);
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if ("block".equals(userAccountEntity.getStatus())) {
-            throw new BadRequestException();
+            throw new BadRequestException(UserAccountService.class.getName());
         }
         userAccountEntity.setStatus("active");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
@@ -192,7 +190,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 
         Optional<UserAccountEntity> optionalManager = userAccountRepository.findById(userAccountEntity.getId());
         return optionalManager.map(manager -> modelMapper.map(manager, UserAccountResponse.class))
-                .orElseThrow(() -> new NotFoundException());
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
     }
 
     @Override
@@ -203,17 +201,17 @@ public class UserAccountService implements UserAccountServiceInterface {
             if (passwordEncoder.matches(loginUser.getPassword(), userAccountEntity.getPassword())) {
                 return modelMapper.map(userAccountEntity, User.class);
             } else {
-                throw new UnauthorizedException();
+                throw new UnauthorizedException(UserAccountService.class.getName());
             }
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException(UserAccountService.class.getName());
         }
     }
 
     @Override
     public boolean updateUserAccount(UserUpdateDTO updateUser) throws NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(updateUser.getUserAccountId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
 
         userAccountEntity.setUsername(updateUser.getUsername());
         userAccountEntity.setEmail(updateUser.getEmail());

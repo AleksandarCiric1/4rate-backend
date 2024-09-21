@@ -45,7 +45,7 @@ public class CommentService implements CommentServiceInterface {
     public Comment addCommment(Integer restaurantId, Comment comment) throws NotFoundException {
         CommentEntity commentEntity = modelMapper.map(comment, CommentEntity.class);
         commentEntity.setId(null);
-        commentEntity.setRestaurant(restaurantRepository.findById(restaurantId).orElseThrow(NotFoundException::new));
+        commentEntity.setRestaurant(restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException(CommentService.class.getName())));
         // commentEntity.setStandardUser(standardUserRepository.findByUserAccount(userAccountRepository.findByUsername(comment.getStandardUserUserAccountUsername())));
         commentEntity = commentRepository.saveAndFlush(commentEntity);
         return comment;
@@ -58,14 +58,14 @@ public class CommentService implements CommentServiceInterface {
 
     @Override
     public Comment getCommentById(Integer commentId) throws NotFoundException {
-        return modelMapper.map(commentRepository.findById(commentId).orElseThrow(NotFoundException::new),
+        return modelMapper.map(commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException(CommentService.class.getName())),
                 Comment.class);
     }
 
     @Override
     public List<Comment> getAllComments(Integer restaurantId) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(CommentService.class.getName()));
         return commentRepository.findByRestaurant(restaurantEntity).stream().map(l -> modelMapper.map(l, Comment.class))
                 .collect(Collectors.toList());
     }

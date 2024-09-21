@@ -34,13 +34,14 @@ public class ReportService implements ReportServiceInterface {
     private final RestaurantRepository restaurantRepository;
     private final ReservationRepository reservationRepository;
     private final MonthlyReportRepository monthlyReportRepository;
+    private final LogService logService;
 
     public ReportService(RestaurantRepository restaurantRepository, ReservationRepository reservationRepository,
-            MonthlyReportRepository monthlyReportRepository) {
+            MonthlyReportRepository monthlyReportRepository, LogService logService) {
         this.restaurantRepository = restaurantRepository;
         this.reservationRepository = reservationRepository;
         this.monthlyReportRepository = monthlyReportRepository;
-
+        this.logService = logService;
     }
 
     @SuppressWarnings("deprecation")
@@ -48,11 +49,11 @@ public class ReportService implements ReportServiceInterface {
     public void generateReport(ByteArrayOutputStream byteArrayOutputStream, Integer restaurantId, Months month,
             Integer year) throws BadRequestException, NotFoundException, IOException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException());
+                .orElseThrow(() -> new NotFoundException(ReportService.class.getName()));
         if (year < restaurantEntity.getCreatedAt().getYear()
                 || (year == restaurantEntity.getCreatedAt().getYear()
                         && month.getNumberOfMonth() < restaurantEntity.getCreatedAt().getMonth())) {
-            throw new BadRequestException();
+            throw new BadRequestException(ReportService.class.getName());
         }
         Document document = new Document();
         Date date = new Date();
@@ -122,7 +123,7 @@ public class ReportService implements ReportServiceInterface {
 
             document.close();
         } catch (DocumentException ex) {
-            ex.printStackTrace();
+            logService.info(ex.getMessage(), ReportService.class.getName());
         }
 
         Path uploadPath = Path.of("src/main/resources/restaurants/" + restaurantId + "/reports");
@@ -134,8 +135,8 @@ public class ReportService implements ReportServiceInterface {
         try {
             // Upisivanje PDF sadržaja iz memorije (byteArrayOutputStream) u fajl
             Files.write(filePath, byteArrayOutputStream.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            logService.info(ex.getMessage(), ReportService.class.getName());
         }
 
         MonthlyReportEntity monthlyReportEntity = new MonthlyReportEntity();

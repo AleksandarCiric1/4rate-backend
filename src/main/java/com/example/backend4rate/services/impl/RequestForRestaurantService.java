@@ -45,7 +45,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
         ManagerEntity managerEntity = managerRepository.findByUserAccountId(userAccountId);
         if (managerEntity == null) {
-            throw new NotFoundException();
+            throw new NotFoundException(RequestForRestaurantService.class.getName());
         }
         requestForRestaurantEntity.setManager(managerEntity);
         requestForRestaurantEntity = requestForRestaurantRepository.saveAndFlush(requestForRestaurantEntity);
@@ -55,9 +55,9 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     @Override
     public boolean approveRequestForRestaurant(Integer requestId) throws NotFoundException {
         RequestForRestaurantEntity request = requestForRestaurantRepository.findById(requestId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName()));
         ManagerEntity managerEntity = managerRepository.findById(request.getManager().getId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName()));
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
@@ -84,7 +84,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public RequestForRestaurantResponse getRequestForRestaurant(Integer requestId) throws NotFoundException {
-        return modelMapper.map(requestForRestaurantRepository.findById(requestId).orElseThrow(NotFoundException::new),
+        return modelMapper.map(requestForRestaurantRepository.findById(requestId).orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName())),
                 RequestForRestaurantResponse.class);
     }
 
@@ -102,7 +102,7 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     private boolean changeStatusForRequest(Integer requestId, String status) throws NotFoundException {
         RequestForRestaurantEntity requestForRestaurantEntity = requestForRestaurantRepository.findById(requestId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName()));
         requestForRestaurantEntity.setStatus(status);
         requestForRestaurantRepository.save(requestForRestaurantEntity);
         return true;
