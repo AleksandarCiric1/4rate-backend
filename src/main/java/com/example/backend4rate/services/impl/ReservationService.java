@@ -77,12 +77,14 @@ public class ReservationService implements ReservationServiceInterface {
 
     @Override
     public List<Reservation> getAllGuestReservations(Integer userAccountId) throws NotFoundException {
-        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId).orElseThrow(NotFoundException::new);
+        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId)
+                .orElseThrow(NotFoundException::new);
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestEntity.getId());
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("Guest hasn't made any reservations! ");
         return reservationEntityList.stream()
-                .filter(l -> (l.getStatus().equals(ReservationStatus.PENDING.name().toLowerCase()) || l.getStatus().equals(ReservationStatus.APPROVED.name().toLowerCase()))
+                .filter(l -> (l.getStatus().equals(ReservationStatus.PENDING.name().toLowerCase())
+                        || l.getStatus().equals(ReservationStatus.APPROVED.name().toLowerCase()))
                         && l.getDate().after(new Date()))
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
@@ -94,7 +96,8 @@ public class ReservationService implements ReservationServiceInterface {
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("There are no reservations for this restaurant!");
         return reservationEntityList.stream()
-                .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase()) && l.getDate().after(new Date()))
+                .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase())
+                        && l.getDate().after(new Date()))
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
@@ -127,29 +130,28 @@ public class ReservationService implements ReservationServiceInterface {
     public Reservation cancelReservation(Integer reservationId) throws NotFoundException {
         ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
                 .orElseThrow(NotFoundException::new);
-        if(ReservationStatus.APPROVED.name().toLowerCase().equals(reservationEntity.getStatus()))
-        {
+        if (ReservationStatus.APPROVED.name().toLowerCase().equals(reservationEntity.getStatus())) {
             reservationEntity.setStatus(ReservationStatus.CANCELED.name().toLowerCase());
             reservationRepository.saveAndFlush(reservationEntity);
-            reservationAvailabilityService.deleteReservationAvailability(reservationEntity);    
+            reservationAvailabilityService.deleteReservationAvailability(reservationEntity);
         }
-        
+
         // TODO Obavijesti gosta o rezultatu obrade
         return modelMapper.map(reservationEntity, Reservation.class);
 
     }
 
-
-
     @Override
-    public List<Reservation> getAllRestaurantReservationsByDate(Integer restaurantId, Date reservationDate) throws NotFoundException{
-    List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
-    if (reservationEntityList.isEmpty())
-        throw new NotFoundException("There are no reservations for this date!");
-    return reservationEntityList.stream()
-            .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase()) && l.getDate().after(reservationDate))
-            .map(l -> modelMapper.map(l, Reservation.class))
-            .collect(Collectors.toList());
+    public List<Reservation> getAllRestaurantReservationsByDate(Integer restaurantId, Date reservationDate)
+            throws NotFoundException {
+        List<ReservationEntity> reservationEntityList = reservationRepository.findAllByRestaurant_Id(restaurantId);
+        if (reservationEntityList.isEmpty())
+            throw new NotFoundException("There are no reservations for this date!");
+        return reservationEntityList.stream()
+                .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase())
+                        && l.getDate().compareTo(reservationDate) == 0)
+                .map(l -> modelMapper.map(l, Reservation.class))
+                .collect(Collectors.toList());
     }
 
 }

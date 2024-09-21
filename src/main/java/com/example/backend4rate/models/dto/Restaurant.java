@@ -18,6 +18,7 @@ public class Restaurant {
     private String address;
     private String city;
     private String country;
+    private ManagerDTO manager;
     private List<RestaurantPhone> restaurantPhones;
     private List<Image> images;
     private List<Comment> comments;

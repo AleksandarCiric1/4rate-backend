@@ -9,4 +9,5 @@ public class UserAccount {
     private String confirmPassword;
     private String role;
     private String email;
+    private String status;
 }
