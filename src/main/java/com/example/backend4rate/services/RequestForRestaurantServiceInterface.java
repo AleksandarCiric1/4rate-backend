@@ -7,6 +7,7 @@ import com.example.backend4rate.models.dto.RequestForRestaurantResponse;
 import java.util.List;
 
 public interface RequestForRestaurantServiceInterface {
+
     RequestForRestaurantResponse createRequestForRestaurant(RequestForRestaurant request, Integer managerInteger)
             throws NotFoundException;
 

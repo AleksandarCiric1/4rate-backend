@@ -1,5 +1,6 @@
 package com.example.backend4rate.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ import com.example.backend4rate.models.entities.RequestForRestaurantEntity;
 @Repository
 public interface RequestForRestaurantRepository extends JpaRepository<RequestForRestaurantEntity, Integer> {
     Optional<RequestForRestaurantEntity> findRequestForRestaurantEntityByManagerId(Integer managerId);
+
+    List<RequestForRestaurantEntity> findAllByStatus(String status);
 }

@@ -21,4 +21,7 @@ public class User {
     private Date dateOfBirth;
     private String firstName;
     private String lastName;
+    private ManagerLogin manager;
+    private GuestLogin guest;
+    private AdminLogin administrator;
 }

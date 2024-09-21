@@ -110,7 +110,7 @@ public class ReservationService implements ReservationServiceInterface {
             return modelMapper.map(reservationEntity, Reservation.class);
         } else
             throw new ReservationsFullException("This appointment is unavailable! ");
-
+        // TO-DO Obavijesti gosta o rezultatu obrade
     }
 
     @Override
