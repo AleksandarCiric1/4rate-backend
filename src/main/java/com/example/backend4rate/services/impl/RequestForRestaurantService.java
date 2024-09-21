@@ -90,8 +90,9 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public List<RequestForRestaurantResponse> getAllRequestForRestaurant() {
-        return requestForRestaurantRepository.findAll().stream()
-                .map(l -> modelMapper.map(l, RequestForRestaurantResponse.class)).collect(Collectors.toList());
+        List<RequestForRestaurantEntity> requests = requestForRestaurantRepository.findAllByStatus("pending");
+        return requests.stream().map(l -> modelMapper.map(l, RequestForRestaurantResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Override
