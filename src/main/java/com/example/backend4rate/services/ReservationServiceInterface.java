@@ -13,10 +13,13 @@ public interface ReservationServiceInterface {
 
     Reservation getReservation(Integer reservationId) throws NotFoundException;
 
-    List<Reservation> getAllGuestReservations(Integer guestId) throws NotFoundException;
+    List<Reservation> getAllGuestReservations(Integer userAccountId) throws NotFoundException;
 
     List<Reservation> getAllRestaurantReservations(Integer restaurant) throws NotFoundException;
+   
+    List<Reservation> getAllRestaurantReservationsByDate(Integer restaurant, Date reservationDate) throws NotFoundException;
     
+
     Reservation makeReservation(ReservationRequest reservation) throws NotFoundException, DuplicateReservationException, ReservationsFullException;
 
     Reservation approveReservation(Integer reservationId) throws NotFoundException, ReservationsFullException;

@@ -29,7 +29,6 @@ public class ReservationEntity implements BaseEntity<Integer>{
     @Column(name = "timeSloth", nullable = false)
     private Integer timeSloth;
     
-    //QA Da li status da bude enumeracija {APPROVED, DENIED, CANCELED, PENDING}
     @Basic
     @Column(name = "status", nullable =false)
     private String status;

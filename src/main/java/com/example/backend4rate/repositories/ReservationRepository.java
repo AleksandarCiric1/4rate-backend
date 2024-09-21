@@ -21,6 +21,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
        List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId);
 
+
        List<ReservationEntity> findAllByRestaurant_IdAndStatus(Integer restaurantId, String status);
 
     @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +

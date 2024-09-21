@@ -1,7 +1,10 @@
 package com.example.backend4rate.services.impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -32,6 +35,12 @@ public class ReservationAvailabilityService implements ReservationAvailabilitySe
     }
 
     @Override
+    public boolean deleteReservationAvailability(ReservationEntity reservationEntity) {
+        return reservationAvailabilityRepository.deleteOneByValue(reservationEntity.getRestaurant().getId(),
+         reservationEntity.getDate(), reservationEntity.getTimeSloth());
+    }
+
+    @Override
     public boolean isAvailable(ReservationEntity reservationEntity){
         Integer capacity = reservationEntity.getRestaurant().getCapacity();
         RestaurantEntity restaurantEntity = reservationEntity.getRestaurant();
@@ -42,8 +51,12 @@ public class ReservationAvailabilityService implements ReservationAvailabilitySe
             return true;
         else return false;
     }
-    
-    //TODO Scheduled brisanje iz tabele ReservationAvailability sve datume manje od danas!!!
+
+  
+    @Scheduled(cron = "0 0 4 * * ?")
+    public void freeReservationSpace() {
+        reservationAvailabilityRepository.deleteByReservationDateBeforeToday(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
 
 
 }
