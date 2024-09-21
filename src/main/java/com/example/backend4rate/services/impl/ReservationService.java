@@ -139,10 +139,7 @@ public class ReservationService implements ReservationServiceInterface {
 
     }
 
-    @Override
-    public Long numberOfReservationsByMonth(Integer restaurantId, Integer month, Integer year) {
-        return reservationRepository.countReservationsByRestaurantAndMonthAndYear(restaurantId, month, year);
-    }
+
 
     @Override
     public List<Reservation> getAllRestaurantReservationsByDate(Integer restaurantId, Date reservationDate) throws NotFoundException{

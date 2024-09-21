@@ -28,6 +28,5 @@ public interface ReservationServiceInterface {
 
     Reservation cancelReservation(Integer reservationId) throws NotFoundException;
 
-    public Long numberOfReservationsByMonth(Integer restaurantId, Integer month, Integer year);
 
 }

@@ -73,10 +73,6 @@ public class ReservationController {
         return reservationService.cancelReservation(reservationId);
     } 
     
-    @GetMapping("/getNumberOfReservationsByMonth/{restaurantId}/{month}/{year}")
-    public Long numberOfReservationByMonth(@PathVariable Integer restaurantId, @PathVariable Integer month, @PathVariable Integer year){
-        return reservationService.numberOfReservationsByMonth(restaurantId, month, year);
-    }
     @PostMapping("/getAllRestaurantReservationsByDate/{restaurantId}")
     public List<Reservation> getAllRestaurantReservationsByDate(@PathVariable Integer restaurantId, @RequestBody DateRequest date) throws NotFoundException {
         return reservationService.getAllRestaurantReservationsByDate(restaurantId, date.getDate());
