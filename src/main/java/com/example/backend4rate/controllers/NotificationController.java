@@ -25,13 +25,6 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping("/createNotification")
-    public ResponseEntity<?> createNotification(@RequestBody NotificationDTO notification) throws NotFoundException {
-        notificationService.createNotification(notification.getUserAccountId(), notification.getMessage());
-
-        return null;
-    }
-
     @GetMapping("/{userId}")
     public List<Notification> getUserNotifications(@PathVariable Integer userId) {
         return notificationService.getUserNotifications(userId);
@@ -49,6 +42,7 @@ public class NotificationController {
 
     @GetMapping("/stream/{userId}")
     public Flux<ServerSentEvent<Notification>> streamReservationApproval(@PathVariable Integer userId) {
-        return notificationService.getReservationApprovalsByUserId(userId);
+        return notificationService.getReservationNotificationsByUserId(userId);
     }
+
 }

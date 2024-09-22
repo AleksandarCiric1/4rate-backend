@@ -12,21 +12,18 @@ import com.example.backend4rate.models.entities.RequestForRestaurantEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
 import com.example.backend4rate.repositories.ManagerRepository;
 import com.example.backend4rate.repositories.RequestForRestaurantRepository;
-import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ManagerServiceInterface;
 
 @Service
 public class ManagerService implements ManagerServiceInterface {
 
     private final ManagerRepository managerRepository;
-    private final RestaurantRepository restaurantRepository;
     private final ModelMapper modelMapper;
     private final RequestForRestaurantRepository requestForRestaurantRepository;
 
-    public ManagerService(ManagerRepository managerRepository, RestaurantRepository restaurantRepository,
-            RequestForRestaurantRepository requestForRestaurantRepository, ModelMapper modelMapper) {
+    public ManagerService(ManagerRepository managerRepository, RequestForRestaurantRepository requestForRestaurantRepository, 
+    ModelMapper modelMapper) {
         this.managerRepository = managerRepository;
-        this.restaurantRepository = restaurantRepository;
         this.requestForRestaurantRepository = requestForRestaurantRepository;
         this.modelMapper = modelMapper;
     }

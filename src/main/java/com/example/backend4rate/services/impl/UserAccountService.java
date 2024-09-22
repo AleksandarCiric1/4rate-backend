@@ -152,6 +152,7 @@ public class UserAccountService implements UserAccountServiceInterface {
             return false;
     }
 
+    @Override
     public boolean unsuspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if ("block".equals(userAccountEntity.getStatus())) {

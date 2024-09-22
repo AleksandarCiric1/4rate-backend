@@ -20,5 +20,5 @@ public class Reservation {
     private String status;
     // private Integer userAccountId; //userAccountId
     private Guest guest;
-    private Integer restaurantId; // front
+    private RestaurantInfoDTO restaurant;
 }

@@ -1,5 +1,6 @@
 package com.example.backend4rate.repositories;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +22,23 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
 
        List<ReservationEntity> findAllByRestaurant_Id(Integer restaurantId);
 
-
        List<ReservationEntity> findAllByRestaurant_IdAndStatus(Integer restaurantId, String status);
 
+<<<<<<< HEAD
     @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +
            "MONTH(r.date) = :month AND YEAR(r.date) = :year")
     Long countReservationsByRestaurantAndMonthAndYear(@Param("restaurantId") Integer restaurantId, 
                                                       @Param("month") Integer month, 
                                                       @Param("year") Integer year);
-    
+
+       @Query("SELECT r FROM ReservationEntity r WHERE r.date < :date AND r.time < :reservationTime")
+       List<ReservationEntity> findAllByDateAndTimeBefore(@Param("date") Date date, @Param("reservationTime") Time reservationTime);
+       
+=======
+       @Query("SELECT COUNT(r) FROM ReservationEntity r WHERE r.restaurant.id = :restaurantId AND " +
+                     "MONTH(r.date) = :month AND YEAR(r.date) = :year")
+       Long countReservationsByRestaurantAndMonthAndYear(@Param("restaurantId") Integer restaurantId,
+                     @Param("month") Integer month,
+                     @Param("year") Integer year);
+>>>>>>> 0b49623 (manager analytic, manager notifications)
 }

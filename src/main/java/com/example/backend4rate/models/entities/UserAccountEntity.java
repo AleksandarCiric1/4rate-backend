@@ -1,13 +1,24 @@
 package com.example.backend4rate.models.entities;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import com.example.backend4rate.base.BaseEntity;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+<<<<<<< HEAD
+=======
+import jakarta.persistence.OneToMany;
+>>>>>>> 0b49623 (manager analytic, manager notifications)
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Data
 @Table(name = "user_account")
@@ -39,7 +50,7 @@ public class UserAccountEntity implements BaseEntity<Integer> {
     private String role;
 
     @Basic
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Basic

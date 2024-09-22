@@ -1,9 +1,11 @@
 package com.example.backend4rate.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,4 +34,11 @@ public class AnalyticController {
         List<RestaurantsPerMonth> userStats = analyticService.getRestaurantCreationStatsForLastYear();
         return ResponseEntity.ok(userStats);
     }
+
+    @GetMapping("/last-quartal-stats/{resturantId}")
+    public ResponseEntity<?> getLastQuartalStatsForRestaurant(@PathVariable Integer resturantId) {
+        Map<String, Long> counts = analyticService.getReservationCountsForLastFourMonths(resturantId);
+        return ResponseEntity.ok().body(counts);
+    }
+
 }

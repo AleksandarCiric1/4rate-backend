@@ -1,22 +1,38 @@
 package com.example.backend4rate.services.impl;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+<<<<<<< HEAD
+import java.time.LocalTime;
+=======
+>>>>>>> 0b49623 (manager analytic, manager notifications)
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
+<<<<<<< HEAD
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.http.codec.ServerSentEvent;
+=======
+>>>>>>> 0b49623 (manager analytic, manager notifications)
 import org.springframework.stereotype.Service;
-import com.example.backend4rate.models.dto.Notification;
+
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.ReservationsFullException;
+import com.example.backend4rate.models.dto.Notification;
 import com.example.backend4rate.models.dto.Reservation;
 import com.example.backend4rate.models.dto.ReservationRequest;
 import com.example.backend4rate.models.entities.GuestEntity;
 import com.example.backend4rate.models.entities.ReservationEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
+import com.example.backend4rate.models.entities.UserAccountEntity;
+import com.example.backend4rate.models.enums.NotificationType;
 import com.example.backend4rate.models.enums.ReservationStatus;
 import com.example.backend4rate.repositories.CategoryRepository;
 import com.example.backend4rate.repositories.GuestRepository;
@@ -25,9 +41,6 @@ import com.example.backend4rate.repositories.RestaurantCategoryRepository;
 import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ReservationServiceInterface;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 @Service
 public class ReservationService implements ReservationServiceInterface {
@@ -38,22 +51,27 @@ public class ReservationService implements ReservationServiceInterface {
     private final GuestRepository guestRepository;
     private final RestaurantRepository restaurantRepository;
     private final ReservationAvailabilityService reservationAvailabilityService;
+    private final NotificationService notificationService;
 
     public ReservationService(ReservationRepository reservationRepository, GuestRepository guestRepository,
             RestaurantRepository restaurantRepository, ModelMapper modelMapper,
             RestaurantPhoneRepository restaurantPhoneRepository, CategoryRepository categoryRepository,
             RestaurantCategoryRepository restaurantCategoryRepository,
-            ReservationAvailabilityService reservationAvailabilityService) {
+            ReservationAvailabilityService reservationAvailabilityService,
+            NotificationService notificationService) {
         this.reservationRepository = reservationRepository;
         this.modelMapper = modelMapper;
         this.guestRepository = guestRepository;
         this.restaurantRepository = restaurantRepository;
         this.reservationAvailabilityService = reservationAvailabilityService;
+        this.notificationService = notificationService;
     }
 
     @Override
     public Reservation getReservation(Integer reservationId) throws NotFoundException {
-        return modelMapper.map(reservationRepository.findById(reservationId).orElseThrow(() -> new NotFoundException(ReservationService.class.getName())),
+        return modelMapper.map(
+                reservationRepository.findById(reservationId)
+                        .orElseThrow(() -> new NotFoundException(ReservationService.class.getName())),
                 Reservation.class);
     }
 
@@ -77,22 +95,34 @@ public class ReservationService implements ReservationServiceInterface {
         reservationEntity.setId(null);
         reservationEntity.setStatus(ReservationStatus.PENDING.name().toLowerCase());
         reservationEntity = reservationRepository.saveAndFlush(reservationEntity);
+        notificationService
+                .createNotification(new Notification(restaurantEntity.getManager().getUserAccount().getId(),
+                        "You have new reservation for " + reservationEntity.getDate() + " in restaurant "
+                                + reservationEntity.getRestaurant().getName() + ".",
+                        "New reservation", NotificationType.NOTIFICATION_MANAGER.getValue()));
         return modelMapper.map(reservationEntity, Reservation.class);
 
     }
 
     @Override
     public List<Reservation> getAllGuestReservations(Integer userAccountId) throws NotFoundException {
-        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId).orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
+        GuestEntity guestEntity = guestRepository.findByUserAccount_Id(userAccountId)
+                .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         List<ReservationEntity> reservationEntityList = reservationRepository.findAllByGuest_Id(guestEntity.getId());
         if (reservationEntityList.isEmpty())
             throw new NotFoundException("Guest hasn't made any reservations! ");
         return reservationEntityList.stream()
                 .filter(l -> (l.getStatus().equals(ReservationStatus.PENDING.name().toLowerCase())
                         || l.getStatus().equals(ReservationStatus.APPROVED.name().toLowerCase()))
-                        && l.getDate().after(new Date()))
+                        && l.getDate().after(getDayBeforeToday()))
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
+    }
+
+    private Date getDayBeforeToday() {
+        LocalDate localDate = LocalDate.now().minusDays(1);
+        Date dayBefor = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return dayBefor;
     }
 
     @Override
@@ -102,7 +132,7 @@ public class ReservationService implements ReservationServiceInterface {
             throw new NotFoundException("There are no reservations for this restaurant!");
         return reservationEntityList.stream()
                 .filter(l -> !l.getStatus().equals(ReservationStatus.DENIED.name().toLowerCase())
-                        && l.getDate().after(new Date()))
+                        && l.getDate().after(getDayBeforeToday()))
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
@@ -115,10 +145,15 @@ public class ReservationService implements ReservationServiceInterface {
             reservationEntity.setStatus(ReservationStatus.APPROVED.name().toLowerCase());
             reservationRepository.saveAndFlush(reservationEntity);
             reservationAvailabilityService.createReservationAvailability(reservationEntity);
+            notificationService
+                    .createNotification(new Notification(reservationEntity.getGuest().getUserAccount().getId(),
+                            "Your reservation for " + reservationEntity.getDate() + " in restaurant "
+                                    + reservationEntity.getRestaurant().getName() + " has been approved!",
+                            "Reservation approval", NotificationType.NOTIFICATION_GUEST.getValue()));
             return modelMapper.map(reservationEntity, Reservation.class);
         } else
             throw new ReservationsFullException("This appointment is unavailable! ");
-        // TO-DO Obavijesti gosta o rezultatu obrade
+
     }
 
     @Override
@@ -127,7 +162,10 @@ public class ReservationService implements ReservationServiceInterface {
                 .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
         reservationEntity.setStatus(ReservationStatus.DENIED.name().toLowerCase());
         reservationRepository.saveAndFlush(reservationEntity);
-        // TODO Obavijesti gosta o rezultatu obrade
+        notificationService.createNotification(new Notification(reservationEntity.getGuest().getUserAccount().getId(),
+                "Your reservation for " + reservationEntity.getDate() + " in restaurant "
+                        + reservationEntity.getRestaurant().getName() + " has been denied!",
+                "Reservation denial", NotificationType.NOTIFICATION_GUEST.getValue()));
         return modelMapper.map(reservationEntity, Reservation.class);
     }
 
@@ -135,14 +173,19 @@ public class ReservationService implements ReservationServiceInterface {
     public Reservation cancelReservation(Integer reservationId) throws NotFoundException {
         ReservationEntity reservationEntity = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException(ReservationService.class.getName()));
-        if(ReservationStatus.APPROVED.name().toLowerCase().equals(reservationEntity.getStatus()))
-        {
+        if (ReservationStatus.APPROVED.name().toLowerCase().equals(reservationEntity.getStatus())) {
             reservationEntity.setStatus(ReservationStatus.CANCELED.name().toLowerCase());
             reservationRepository.saveAndFlush(reservationEntity);
             reservationAvailabilityService.deleteReservationAvailability(reservationEntity);
         }
 
-        // TODO Obavijesti gosta o rezultatu obrade
+        RestaurantEntity restaurantEntity = reservationEntity.getRestaurant();
+        UserAccountEntity guest = reservationEntity.getGuest().getUserAccount();
+        notificationService
+                .createNotification(new Notification(restaurantEntity.getManager().getUserAccount().getId(),
+                        guest.getFirstName() + " " + guest.getLastName() + " canceled his reservation for "
+                                + reservationEntity.getDate() + " in your restaurant.",
+                        "Cancelation of reservation", NotificationType.NOTIFICATION_MANAGER.getValue()));
         return modelMapper.map(reservationEntity, Reservation.class);
 
     }
@@ -160,26 +203,32 @@ public class ReservationService implements ReservationServiceInterface {
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
     }
+<<<<<<< HEAD
 
-    /** NOTIFICATIONS */
-    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
-
-    // Method to trigger an approval notification event
-    public void approveReservation(Integer userId, String reservationId) {
-        // Logic for reservation approval...
-
-        // Emit notification when the reservation is approved
-        notificationSink
-                .tryEmitNext(new Notification(userId, "Your reservation #" + reservationId + " has been approved."));
+    private ReservationEntity changeStatusToDenyReservation(ReservationEntity reservationEntity) {
+        reservationEntity.setStatus(ReservationStatus.DENIED.name().toLowerCase());
+        // TODO Obavijesti gosta o rezultatu obrade
+        return reservationEntity;
     }
 
-    // Streaming reservation approval notifications to clients
-    public Flux<ServerSentEvent<Notification>> getReservationApprovalsByUserId(Integer userId) {
-        return notificationSink.asFlux()
-                .filter(notification -> notification.getId().equals(userId)) // Only stream for specific user
-                .map(notification -> ServerSentEvent.<Notification>builder()
-                        .event("reservation-approval")
-                        .data(notification)
-                        .build());
+    @Scheduled(fixedRate = 900000)
+    public void expireReservation() throws NotFoundException {
+        Date today = new Date();
+        Time currentTime30 = Time.valueOf(LocalTime.now().plusMinutes(30));
+        List<ReservationEntity> listOfExpireReservation = reservationRepository.findAllByDateAndTimeBefore(today,
+                currentTime30);
+        System.out.println(listOfExpireReservation.get(0).getId());
+
+        for (ReservationEntity reservationEntity : listOfExpireReservation) {
+            if ("pending".equals(reservationEntity.getStatus())) {
+                reservationEntity = this.changeStatusToDenyReservation(reservationEntity);
+            }
+            System.out.println(reservationEntity.getId());
+        }
+        reservationRepository.saveAllAndFlush(listOfExpireReservation);
+
     }
+
+=======
+>>>>>>> 0b49623 (manager analytic, manager notifications)
 }

@@ -32,6 +32,10 @@ public class NotificationEntity implements BaseEntity<Integer> {
     @Column(name = "is_read", nullable = false)
     private boolean isRead;
 
+    @Basic
+    @Column(name = "notification_type", nullable = false)
+    private String notificationType;
+
     @ManyToOne
     @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
     private UserAccountEntity userAccount;

@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Restaurant {
+public class RestaurantInfoDTO {
     private Integer id;
     private String name;
     private String description;
@@ -18,10 +16,4 @@ public class Restaurant {
     private String address;
     private String city;
     private String country;
-    private ManagerDTO manager;
-    private List<RestaurantPhone> restaurantPhones;
-    private List<Image> images;
-    private List<ReviewDTO> reviews;
-    private List<ReservationDTO> reservations;
-    private List<RestaurantCategory> restaurantCategories;
 }

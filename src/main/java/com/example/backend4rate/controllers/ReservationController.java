@@ -1,33 +1,25 @@
 package com.example.backend4rate.controllers;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.models.dto.DateRequest;
-import com.example.backend4rate.models.dto.Notification;
 import com.example.backend4rate.models.dto.Reservation;
-import com.example.backend4rate.models.dto.ReservationAvailability;
 import com.example.backend4rate.models.dto.ReservationRequest;
 import com.example.backend4rate.repositories.ReservationAvailabilityRepository;
 import com.example.backend4rate.services.impl.ReservationService;
 
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
-
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/v1/reservations")
@@ -35,23 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final ReservationAvailabilityRepository reservationAvailabilityRepository;
 
     public ReservationController(ReservationService reservationService,
             ReservationAvailabilityRepository reservationAvailabilityRepository) {
         this.reservationService = reservationService;
-        this.reservationAvailabilityRepository = reservationAvailabilityRepository;
-    }
-
-    @GetMapping("/stream/{userId}")
-    public Flux<ServerSentEvent<Notification>> streamReservationApproval(@PathVariable Integer userId) {
-        return reservationService.getReservationApprovalsByUserId(userId);
-    }
-
-    @GetMapping("/trigger-notification")
-    public ResponseEntity<?> method() {
-        reservationService.approveReservation(1, "2");
-        return null;
     }
 
     @GetMapping("/getReservation/{reservationId}")
@@ -59,9 +38,9 @@ public class ReservationController {
         return reservationService.getReservation(reservationId);
     }
 
-    @GetMapping("/getAllGuestReservations/{guestId}")
-    public List<Reservation> getAllGuestReservations(@PathVariable Integer guestId) throws NotFoundException {
-        return reservationService.getAllGuestReservations(guestId);
+    @GetMapping("/getAllGuestReservations/{userAccountId}")
+    public List<Reservation> getAllGuestReservations(@PathVariable Integer userAccountId) throws NotFoundException {
+        return reservationService.getAllGuestReservations(userAccountId);
     }
 
     @GetMapping("/getAllRestaurantReservations/{restaurantId}")

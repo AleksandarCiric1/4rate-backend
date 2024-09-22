@@ -1,30 +1,31 @@
 package com.example.backend4rate.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.example.backend4rate.exceptions.NotFoundException;
-import com.example.backend4rate.exceptions.UnauthorizedException;
-import com.example.backend4rate.models.dto.LoginUser;
-import com.example.backend4rate.models.dto.UpdateInformation;
-import com.example.backend4rate.models.dto.User;
-import com.example.backend4rate.models.dto.PasswordChange;
-import com.example.backend4rate.models.dto.UserAccount;
-import com.example.backend4rate.models.dto.UserAccountResponse;
-import com.example.backend4rate.models.dto.UserUpdateDTO;
-import com.example.backend4rate.services.impl.UserAccountService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+<<<<<<< HEAD
+import org.springframework.http.ResponseEntity;
+=======
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+>>>>>>> 0b49623 (manager analytic, manager notifications)
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend4rate.exceptions.NotFoundException;
+import com.example.backend4rate.exceptions.UnauthorizedException;
+import com.example.backend4rate.models.dto.LoginUser;
+import com.example.backend4rate.models.dto.PasswordChange;
+<<<<<<< HEAD
+=======
+import com.example.backend4rate.models.dto.User;
+>>>>>>> 0b49623 (manager analytic, manager notifications)
+import com.example.backend4rate.models.dto.UserAccount;
+import com.example.backend4rate.models.dto.UserUpdateDTO;
+import com.example.backend4rate.services.impl.UserAccountService;
 
 @RestController
 @RequestMapping("/v1/userAccounts")
@@ -52,16 +53,6 @@ public class UserAccountController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
-    }
-
-    @GetMapping("/getAllAccounts")
-    public List<User> getAllAccounts() {
-        return userAccountService.getAllAccounts();
-    }
-
-    @GetMapping("/getUser/{userAccountId}")
-    public ResponseEntity<?> getUser(@PathVariable Integer userAccountId) throws NotFoundException {
-        return ResponseEntity.ok().body(userAccountService.getUserByUserAccountId(userAccountId));
     }
 
     @PutMapping("/updateUserAccount")
