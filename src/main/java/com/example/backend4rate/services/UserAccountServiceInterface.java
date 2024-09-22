@@ -2,16 +2,12 @@ package com.example.backend4rate.services;
 
 import java.util.List;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-
 import com.example.backend4rate.exceptions.BadRequestException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
-import com.example.backend4rate.models.dto.StandardUser;
-import com.example.backend4rate.models.dto.UpdateInformation;
-import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.PasswordChange;
+import com.example.backend4rate.models.dto.User;
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserAccountResponse;
 import com.example.backend4rate.models.dto.UserUpdateDTO;
