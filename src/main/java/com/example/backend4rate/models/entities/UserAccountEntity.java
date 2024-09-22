@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import com.example.backend4rate.base.BaseEntity;
 
@@ -69,4 +70,7 @@ public class UserAccountEntity implements BaseEntity<Integer> {
 
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private ManagerEntity manager;
+
+    @OneToMany(mappedBy = "userAccount")
+    private List<NotificationEntity> notifications;
 }

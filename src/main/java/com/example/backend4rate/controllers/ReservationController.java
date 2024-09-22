@@ -6,15 +6,21 @@ import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.ReservationsFullException;
 import com.example.backend4rate.models.dto.DateRequest;
+import com.example.backend4rate.models.dto.Notification;
 import com.example.backend4rate.models.dto.Reservation;
 import com.example.backend4rate.models.dto.ReservationAvailability;
 import com.example.backend4rate.models.dto.ReservationRequest;
 import com.example.backend4rate.repositories.ReservationAvailabilityRepository;
 import com.example.backend4rate.services.impl.ReservationService;
 
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/v1/reservations")
+@Slf4j
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -34,6 +41,17 @@ public class ReservationController {
             ReservationAvailabilityRepository reservationAvailabilityRepository) {
         this.reservationService = reservationService;
         this.reservationAvailabilityRepository = reservationAvailabilityRepository;
+    }
+
+    @GetMapping("/stream/{userId}")
+    public Flux<ServerSentEvent<Notification>> streamReservationApproval(@PathVariable Integer userId) {
+        return reservationService.getReservationApprovalsByUserId(userId);
+    }
+
+    @GetMapping("/trigger-notification")
+    public ResponseEntity<?> method() {
+        reservationService.approveReservation(1, "2");
+        return null;
     }
 
     @GetMapping("/getReservation/{reservationId}")

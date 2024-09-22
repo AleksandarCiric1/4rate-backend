@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @Table(name = "reservation")
 @Entity
-public class ReservationEntity implements BaseEntity<Integer>{
+public class ReservationEntity implements BaseEntity<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -28,14 +28,18 @@ public class ReservationEntity implements BaseEntity<Integer>{
     @Basic
     @Column(name = "timeSloth", nullable = false)
     private Integer timeSloth;
-    
+
     @Basic
-    @Column(name = "status", nullable =false)
+    @Column(name = "status", nullable = false)
     private String status;
 
     @Basic
     @Column(name = "description", nullable = false)
     private String description;
+
+    @Basic
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "guest_id", referencedColumnName = "id", nullable = false)

@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-
+import com.example.backend4rate.models.dto.Notification;
 import com.example.backend4rate.exceptions.DuplicateReservationException;
 import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.ReservationsFullException;
@@ -24,6 +25,9 @@ import com.example.backend4rate.repositories.RestaurantCategoryRepository;
 import com.example.backend4rate.repositories.RestaurantPhoneRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
 import com.example.backend4rate.services.ReservationServiceInterface;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class ReservationService implements ReservationServiceInterface {
@@ -67,6 +71,7 @@ public class ReservationService implements ReservationServiceInterface {
 
         reservationEntity.setGuest(guestEntity);
         reservationEntity.setRestaurant(restaurantEntity);
+        reservationEntity.setCreatedAt(new Date());
         reservationEntity.setTimeSloth(reservation.getTime().toLocalTime().getHour());
 
         reservationEntity.setId(null);
@@ -156,4 +161,25 @@ public class ReservationService implements ReservationServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    /** NOTIFICATIONS */
+    private final Sinks.Many<Notification> notificationSink = Sinks.many().multicast().onBackpressureBuffer();
+
+    // Method to trigger an approval notification event
+    public void approveReservation(Integer userId, String reservationId) {
+        // Logic for reservation approval...
+
+        // Emit notification when the reservation is approved
+        notificationSink
+                .tryEmitNext(new Notification(userId, "Your reservation #" + reservationId + " has been approved."));
+    }
+
+    // Streaming reservation approval notifications to clients
+    public Flux<ServerSentEvent<Notification>> getReservationApprovalsByUserId(Integer userId) {
+        return notificationSink.asFlux()
+                .filter(notification -> notification.getId().equals(userId)) // Only stream for specific user
+                .map(notification -> ServerSentEvent.<Notification>builder()
+                        .event("reservation-approval")
+                        .data(notification)
+                        .build());
+    }
 }
