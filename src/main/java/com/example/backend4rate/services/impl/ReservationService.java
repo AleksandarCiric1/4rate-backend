@@ -1,11 +1,18 @@
 package com.example.backend4rate.services.impl;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.backend4rate.exceptions.DuplicateReservationException;
@@ -154,6 +161,28 @@ public class ReservationService implements ReservationServiceInterface {
                         && sdf.format(l.getDate()).compareTo(sdf.format(reservationDate)) == 0)
                 .map(l -> modelMapper.map(l, Reservation.class))
                 .collect(Collectors.toList());
+    }
+
+
+    private ReservationEntity changeStatusToDenyReservation(ReservationEntity reservationEntity){
+        reservationEntity.setStatus(ReservationStatus.DENIED.name().toLowerCase());
+        // TODO Obavijesti gosta o rezultatu obrade
+        return reservationEntity;
+    }
+    @Scheduled(fixedRate = 900000)
+    public void expireReservation() throws NotFoundException{
+        Date today = new Date();
+        Time currentTime30 = Time.valueOf(LocalTime.now().plusMinutes(30));
+        List<ReservationEntity> listOfExpireReservation = reservationRepository.findAllByDateAndTimeBefore(today, currentTime30);
+        System.out.println(listOfExpireReservation.get(0).getId());
+
+        for(ReservationEntity reservationEntity : listOfExpireReservation){
+            if("pending".equals(reservationEntity.getStatus())){
+                reservationEntity = this.changeStatusToDenyReservation(reservationEntity);
+            }
+            System.out.println(reservationEntity.getId());
+        }            reservationRepository.saveAllAndFlush(listOfExpireReservation);
+
     }
 
 }
