@@ -33,9 +33,9 @@ public class ReservationController {
         return reservationService.getReservation(reservationId);
     }
 
-    @GetMapping("/getAllGuestReservations/{guestId}")
-    public List<Reservation> getAllGuestReservations(@PathVariable Integer guestId) throws NotFoundException {
-        return reservationService.getAllGuestReservations(guestId);
+    @GetMapping("/getAllGuestReservations/{userAccountId}")
+    public List<Reservation> getAllGuestReservations(@PathVariable Integer userAccountId) throws NotFoundException {
+        return reservationService.getAllGuestReservations(userAccountId);
     }
 
     @GetMapping("/getAllRestaurantReservations/{restaurantId}")

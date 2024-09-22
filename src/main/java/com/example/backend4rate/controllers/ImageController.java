@@ -50,7 +50,7 @@ public class ImageController {
     }
 
     @GetMapping("/getImage/{id}/{imageName}")
-    public ResponseEntity<Resource> getAvatar(@PathVariable Integer id, @PathVariable String imageName)
+    public ResponseEntity<Resource> getImage(@PathVariable Integer id, @PathVariable String imageName)
             throws NotFoundException, MalformedURLException {
         Resource resource = imageService.getImage(id, imageName);
 
