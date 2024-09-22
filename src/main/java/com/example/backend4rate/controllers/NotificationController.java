@@ -1,18 +1,19 @@
 package com.example.backend4rate.controllers;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-import com.example.backend4rate.exceptions.NotFoundException;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.backend4rate.models.dto.Notification;
-import com.example.backend4rate.models.dto.NotificationDTO;
 import com.example.backend4rate.services.impl.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/notifications")

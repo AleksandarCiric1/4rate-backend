@@ -105,7 +105,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public UserAccountEntity confirmAccount(Integer id) throws NotFoundException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
 
         if (userAccountEntity == null)
             throw new NotFoundException(UserAccountService.class.getName());
@@ -129,7 +130,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public boolean blockUserAccount(Integer id) throws NotFoundException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         userAccountEntity.setStatus("block");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
         if (userAccountEntity.getStatus().equals("block"))
@@ -140,7 +142,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public boolean suspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if ("block".equals(userAccountEntity.getStatus())) {
             throw new BadRequestException(UserAccountService.class.getName());
         }
@@ -154,7 +157,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public boolean unsuspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
-        UserAccountEntity userAccountEntity = userAccountRepository.findById(id).orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
         if ("block".equals(userAccountEntity.getStatus())) {
             throw new BadRequestException(UserAccountService.class.getName());
         }
@@ -214,8 +218,6 @@ public class UserAccountService implements UserAccountServiceInterface {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(updateUser.getUserAccountId())
                 .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
 
-        userAccountEntity.setUsername(updateUser.getUsername());
-        userAccountEntity.setEmail(updateUser.getEmail());
         userAccountEntity.setFirstName(updateUser.getFirstName());
         userAccountEntity.setLastName(updateUser.getLastName());
         userAccountEntity.setDateOfBirth(updateUser.getDateOfBirth());

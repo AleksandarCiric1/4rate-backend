@@ -12,12 +12,14 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.backend4rate.models.dto.AnalyticCounts;
 import com.example.backend4rate.models.dto.RestaurantsPerMonth;
 import com.example.backend4rate.models.dto.UsersPerMonth;
 import com.example.backend4rate.models.entities.RestaurantEntity;
 import com.example.backend4rate.models.entities.UserAccountEntity;
 import com.example.backend4rate.repositories.ReservationRepository;
 import com.example.backend4rate.repositories.RestaurantRepository;
+import com.example.backend4rate.repositories.ReviewRepository;
 import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.services.AnalyticServiceInterface;
 
@@ -26,13 +28,16 @@ public class AnalyticService implements AnalyticServiceInterface {
 
         private final UserAccountRepository userAccountRepository;
         private final RestaurantRepository restaurantRepository;
+        private final ReviewRepository reviewRepository;
         private final ReservationRepository reservationRepository;
 
         public AnalyticService(UserAccountRepository userAccountRepository, ModelMapper modelMapper,
-                        RestaurantRepository restaurantRepository, ReservationRepository reservationRepository) {
+                        RestaurantRepository restaurantRepository, ReservationRepository reservationRepository,
+                        ReviewRepository reviewRepository) {
                 this.userAccountRepository = userAccountRepository;
                 this.restaurantRepository = restaurantRepository;
                 this.reservationRepository = reservationRepository;
+                this.reviewRepository = reviewRepository;
         }
 
         @Override
@@ -129,5 +134,16 @@ public class AnalyticService implements AnalyticServiceInterface {
                 }
 
                 return reservationCounts;
+        }
+
+        @Override
+        public AnalyticCounts getAllCounts() {
+                AnalyticCounts analyticCounts = new AnalyticCounts();
+
+                analyticCounts.setUsers(userAccountRepository.findAll().size());
+                analyticCounts.setRestaurants(restaurantRepository.findAll().size());
+                analyticCounts.setReviews(reviewRepository.findAll().size());
+
+                return analyticCounts;
         }
 }

@@ -1,14 +1,6 @@
 package com.example.backend4rate.controllers;
 
-<<<<<<< HEAD
 import org.springframework.http.ResponseEntity;
-=======
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
->>>>>>> 0b49623 (manager analytic, manager notifications)
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +11,6 @@ import com.example.backend4rate.exceptions.NotFoundException;
 import com.example.backend4rate.exceptions.UnauthorizedException;
 import com.example.backend4rate.models.dto.LoginUser;
 import com.example.backend4rate.models.dto.PasswordChange;
-<<<<<<< HEAD
-=======
-import com.example.backend4rate.models.dto.User;
->>>>>>> 0b49623 (manager analytic, manager notifications)
 import com.example.backend4rate.models.dto.UserAccount;
 import com.example.backend4rate.models.dto.UserUpdateDTO;
 import com.example.backend4rate.services.impl.UserAccountService;

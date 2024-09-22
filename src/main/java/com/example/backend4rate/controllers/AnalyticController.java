@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend4rate.models.dto.AnalyticCounts;
 import com.example.backend4rate.models.dto.RestaurantsPerMonth;
 import com.example.backend4rate.models.dto.UsersPerMonth;
 import com.example.backend4rate.services.AnalyticServiceInterface;
@@ -39,6 +40,12 @@ public class AnalyticController {
     public ResponseEntity<?> getLastQuartalStatsForRestaurant(@PathVariable Integer resturantId) {
         Map<String, Long> counts = analyticService.getReservationCountsForLastFourMonths(resturantId);
         return ResponseEntity.ok().body(counts);
+    }
+
+    @GetMapping("/getAllCounts")
+    public ResponseEntity<?> getAllCounts() {
+        AnalyticCounts analyticCounts = analyticService.getAllCounts();
+        return ResponseEntity.ok().body(analyticCounts);
     }
 
 }

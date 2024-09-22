@@ -2,8 +2,6 @@ package com.example.backend4rate.models.dto;
 
 import java.util.Date;
 
-import com.example.backend4rate.models.entities.UserAccountEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

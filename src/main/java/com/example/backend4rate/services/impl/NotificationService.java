@@ -41,7 +41,6 @@ public class NotificationService implements NotificationServiceInterface {
                                 .tryEmitNext(newNotification);
         }
 
-        // Streaming reservation approval notifications to clients
         public Flux<ServerSentEvent<Notification>> getReservationNotificationsByUserId(Integer userId) {
                 return notificationSink.asFlux()
                                 .filter(notification -> notification.getUserAccountId().equals(userId))

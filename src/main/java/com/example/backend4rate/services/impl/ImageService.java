@@ -102,6 +102,12 @@ public class ImageService implements ImageServiceInterface {
         return new UrlResource(path.toUri());
     }
 
+    public Resource getAvatarByAvatarUrl(String avatarUrl) throws NotFoundException, MalformedURLException {
+        String dir = pathToAvatar;
+        Path path = Path.of(dir).resolve(avatarUrl);
+        return new UrlResource(path.toUri());
+    }
+
     @Override
     public void deleteImage(Integer id) throws NotFoundException, IOException {
         ImageEntity imageEntity = imageRepository.findById(id)

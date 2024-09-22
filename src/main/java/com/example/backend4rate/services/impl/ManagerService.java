@@ -21,8 +21,9 @@ public class ManagerService implements ManagerServiceInterface {
     private final ModelMapper modelMapper;
     private final RequestForRestaurantRepository requestForRestaurantRepository;
 
-    public ManagerService(ManagerRepository managerRepository, RequestForRestaurantRepository requestForRestaurantRepository, 
-    ModelMapper modelMapper) {
+    public ManagerService(ManagerRepository managerRepository,
+            RequestForRestaurantRepository requestForRestaurantRepository,
+            ModelMapper modelMapper) {
         this.managerRepository = managerRepository;
         this.requestForRestaurantRepository = requestForRestaurantRepository;
         this.modelMapper = modelMapper;
@@ -30,22 +31,18 @@ public class ManagerService implements ManagerServiceInterface {
 
     @Override
     public Object checkRestaurantStatus(Integer userAccountId) throws NotFoundException {
-        // Get Manager
         ManagerEntity managerEntity = managerRepository.findByUserAccountId(userAccountId);
         Integer managerId = managerEntity.getId();
 
         RestaurantEntity restaurantEntity = managerEntity.getRestaurant();
         if (restaurantEntity != null) {
-            // Check if manager already has a restaurant
             if ("active".equals(restaurantEntity.getStatus()))
                 return modelMapper.map(restaurantEntity, Restaurant.class);
 
-            // Check if restaurant is blocked
             else if ("blocked".equals(restaurantEntity.getStatus()))
                 return "Restaurant is blocked";
         }
 
-        // Check if there is pending request
         Optional<RequestForRestaurantEntity> pendingRequest = requestForRestaurantRepository
                 .findRequestForRestaurantEntityByManagerId(managerId);
         if (pendingRequest.isPresent()) {
