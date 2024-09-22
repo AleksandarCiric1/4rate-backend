@@ -45,7 +45,7 @@ public class UserAccountEntity implements BaseEntity<Integer> {
     private String role;
 
     @Basic
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Basic
