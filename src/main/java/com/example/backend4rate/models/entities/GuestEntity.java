@@ -26,9 +26,6 @@ public class GuestEntity implements BaseEntity<Integer> {
     private UserAccountEntity userAccount;
 
     @OneToMany(mappedBy = "guest")
-    private List<CategorySubscriptionEntity> categorySubscriptions;
-
-    @OneToMany(mappedBy = "guest")
     private List<ReservationEntity> reservations;
 
     @OneToMany(mappedBy = "guest")

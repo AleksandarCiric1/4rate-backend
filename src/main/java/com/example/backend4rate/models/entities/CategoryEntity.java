@@ -25,8 +25,5 @@ public class CategoryEntity implements BaseEntity<Integer>{
     private boolean status;
 
     @OneToMany(mappedBy = "category")
-    private List<CategorySubscriptionEntity> categorySubscriptions;
-
-    @OneToMany(mappedBy = "category")
     private List<RestaurantCategoryEntity> restaurantCategories;
 }
