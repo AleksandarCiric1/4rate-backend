@@ -7,7 +7,6 @@ import java.util.Date;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-
 import com.example.backend4rate.models.entities.ReservationAvailabilityEntity;
 import com.example.backend4rate.models.entities.ReservationEntity;
 import com.example.backend4rate.models.entities.RestaurantEntity;
@@ -19,8 +18,8 @@ public class ReservationAvailabilityService implements ReservationAvailabilitySe
 
     ReservationAvailabilityRepository reservationAvailabilityRepository;
 
-    public ReservationAvailabilityService(ReservationAvailabilityRepository reservationAvailabilityRepository){
-        this.reservationAvailabilityRepository=reservationAvailabilityRepository;    
+    public ReservationAvailabilityService(ReservationAvailabilityRepository reservationAvailabilityRepository) {
+        this.reservationAvailabilityRepository = reservationAvailabilityRepository;
     }
 
     @Override
@@ -35,28 +34,30 @@ public class ReservationAvailabilityService implements ReservationAvailabilitySe
     }
 
     @Override
-    public boolean deleteReservationAvailability(ReservationEntity reservationEntity) {
-        return reservationAvailabilityRepository.deleteOneByValue(reservationEntity.getRestaurant().getId(),
-         reservationEntity.getDate(), reservationEntity.getTimeSloth());
+    public void deleteReservationAvailability(ReservationEntity reservationEntity) {
+        reservationAvailabilityRepository.deleteOneByValue(reservationEntity.getRestaurant().getId(),
+                reservationEntity.getDate(), reservationEntity.getTimeSloth());
     }
 
     @Override
-    public boolean isAvailable(ReservationEntity reservationEntity){
+    public boolean isAvailable(ReservationEntity reservationEntity) {
         Integer capacity = reservationEntity.getRestaurant().getCapacity();
         RestaurantEntity restaurantEntity = reservationEntity.getRestaurant();
         Integer timeSloth = reservationEntity.getTimeSloth();
         Date reservationDate = reservationEntity.getDate();
-        Long usedCapacity = reservationAvailabilityRepository.findByRestaurantAndReservationDateAndTimeSloth(restaurantEntity, reservationDate, timeSloth).stream().count();
-        if (usedCapacity < (long)capacity) 
+        Long usedCapacity = reservationAvailabilityRepository
+                .findByRestaurantAndReservationDateAndTimeSloth(restaurantEntity, reservationDate, timeSloth).stream()
+                .count();
+        if (usedCapacity < (long) capacity)
             return true;
-        else return false;
+        else
+            return false;
     }
 
-  
     @Scheduled(cron = "0 0 4 * * ?")
     public void freeReservationSpace() {
-        reservationAvailabilityRepository.deleteByReservationDateBeforeToday(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        reservationAvailabilityRepository.deleteByReservationDateBeforeToday(
+                Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
-
 
 }

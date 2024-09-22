@@ -85,6 +85,18 @@ public class ImageController {
         }
     }
 
+    @GetMapping("/getAvatar")
+    public ResponseEntity<Resource> getAvatarBYAvatarUrl(@RequestParam("avatarUrl") String avatarUrl)
+            throws NotFoundException, MalformedURLException {
+        Resource resource = imageService.getAvatarByAvatarUrl(avatarUrl);
+
+        if (resource != null && (resource.exists() || resource.isReadable())) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @DeleteMapping("/deleteAvatar/{id}")
     public ResponseEntity<?> deleteAvatar(@PathVariable Integer id) throws NotFoundException, IOException {
         imageService.deleteAvatar(id);

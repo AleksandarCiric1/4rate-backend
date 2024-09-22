@@ -41,8 +41,7 @@ public class ReviewService implements ReviewServiceInterface {
         this.guestRepository = guestRepository;
     }
 
-    @Override // QA Da li parametri da budu id restorana, gosta i taj dto review ili sve
-              // spakovano u review dto?
+    @Override
     public ReviewResponse addReview(Integer restaurantId, Review review) throws NotFoundException {
         GuestEntity guestEntity = guestRepository.findByUserAccount_Id(review.getUserAccountId())
                 .orElseThrow(() -> new NotFoundException(ReviewService.class.getName()));
@@ -52,7 +51,8 @@ public class ReviewService implements ReviewServiceInterface {
         reviewEntity.setCreatedAt(new Date());
         reviewEntity.setComment(review.getComment());
         reviewEntity.setGrade(review.getGrade());
-        reviewEntity.setRestaurant(restaurantRepository.findById(restaurantId).orElseThrow(() -> new NotFoundException(ReviewService.class.getName())));
+        reviewEntity.setRestaurant(restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(ReviewService.class.getName())));
         reviewEntity = reviewRepository.saveAndFlush(reviewEntity);
 
         return modelMapper.map(review, ReviewResponse.class);
@@ -65,7 +65,9 @@ public class ReviewService implements ReviewServiceInterface {
 
     @Override
     public ReviewResponse getReviewById(Integer reviewId) throws NotFoundException {
-        return modelMapper.map(reviewRepository.findById(reviewId).orElseThrow(() -> new NotFoundException(ReviewService.class.getName())),
+        return modelMapper.map(
+                reviewRepository.findById(reviewId)
+                        .orElseThrow(() -> new NotFoundException(ReviewService.class.getName())),
                 ReviewResponse.class);
     }
 

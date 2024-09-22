@@ -17,19 +17,26 @@ public class NotificationEntity implements BaseEntity<Integer> {
     private Integer id;
 
     @Basic
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "title", nullable = false)
+    private String title;
 
     @Basic
-    @Column(name = "date", nullable = false)
-    private Date date;
+    @Column(name = "message", nullable = false)
+    private String message;
 
     @Basic
-    @Column(name = "status", nullable = false)
-    private boolean status;
-    // notifications will be considered later
-    // @ManyToOne
-    // @JoinColumn(name = "standard_user_id", referencedColumnName = "id", nullable
-    // = false)
-    // private StandardUserEntity standardUser;
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
+
+    @Basic
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead;
+
+    @Basic
+    @Column(name = "notification_type", nullable = false)
+    private String notificationType;
+
+    @ManyToOne
+    @JoinColumn(name = "user_account_id", referencedColumnName = "id", nullable = false)
+    private UserAccountEntity userAccount;
 }

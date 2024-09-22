@@ -25,7 +25,6 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
     private final RestaurantRepository restaurantRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
-    // private final ReservationAvailabilityService reservationAvailabilityService;
 
     public RequestForRestaurantService(RequestForRestaurantRepository requestForRestaurantRepository,
             ModelMapper modelMapper, ManagerRepository managerRepository, RestaurantRepository restaurantRepository) {
@@ -33,7 +32,6 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
         this.modelMapper = modelMapper;
         this.managerRepository = managerRepository;
         this.restaurantRepository = restaurantRepository;
-        // this.reservationAvailabilityService=reservationAvailabilityService;
     }
 
     @Override
@@ -59,7 +57,9 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
                 .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName()));
         ManagerEntity managerEntity = managerRepository.findById(request.getManager().getId())
                 .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName()));
-        if("blocked".equals(managerEntity.getUserAccount().getStatus())) throw new ManagerBlockedException(); ;
+        if ("blocked".equals(managerEntity.getUserAccount().getStatus()))
+            throw new ManagerBlockedException();
+        ;
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
@@ -86,7 +86,9 @@ public class RequestForRestaurantService implements RequestForRestaurantServiceI
 
     @Override
     public RequestForRestaurantResponse getRequestForRestaurant(Integer requestId) throws NotFoundException {
-        return modelMapper.map(requestForRestaurantRepository.findById(requestId).orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName())),
+        return modelMapper.map(
+                requestForRestaurantRepository.findById(requestId)
+                        .orElseThrow(() -> new NotFoundException(RequestForRestaurantService.class.getName())),
                 RequestForRestaurantResponse.class);
     }
 

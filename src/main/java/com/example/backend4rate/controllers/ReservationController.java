@@ -18,8 +18,11 @@ import com.example.backend4rate.models.dto.Reservation;
 import com.example.backend4rate.models.dto.ReservationRequest;
 import com.example.backend4rate.services.impl.ReservationService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/v1/reservations")
+@Slf4j
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -33,9 +36,9 @@ public class ReservationController {
         return reservationService.getReservation(reservationId);
     }
 
-    @GetMapping("/getAllGuestReservations/{guestId}")
-    public List<Reservation> getAllGuestReservations(@PathVariable Integer guestId) throws NotFoundException {
-        return reservationService.getAllGuestReservations(guestId);
+    @GetMapping("/getAllGuestReservations/{userAccountId}")
+    public List<Reservation> getAllGuestReservations(@PathVariable Integer userAccountId) throws NotFoundException {
+        return reservationService.getAllGuestReservations(userAccountId);
     }
 
     @GetMapping("/getAllRestaurantReservations/{restaurantId}")
