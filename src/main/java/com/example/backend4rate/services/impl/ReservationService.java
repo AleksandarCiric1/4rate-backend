@@ -217,20 +217,18 @@ public class ReservationService implements ReservationServiceInterface {
                 return reservationEntity;
         }
 
-        @Scheduled(fixedRate = 900000)
+        @Scheduled(fixedRate = 900000) // 15min
         public void expireReservation() throws NotFoundException {
                 Date today = new Date();
                 Time currentTime30 = Time.valueOf(LocalTime.now().plusMinutes(30));
                 List<ReservationEntity> listOfExpireReservation = reservationRepository.findAllByDateAndTimeBefore(
                                 today,
                                 currentTime30);
-                System.out.println(listOfExpireReservation.get(0).getId());
 
                 for (ReservationEntity reservationEntity : listOfExpireReservation) {
                         if ("pending".equals(reservationEntity.getStatus())) {
                                 reservationEntity = this.changeStatusToDenyReservation(reservationEntity);
                         }
-                        System.out.println(reservationEntity.getId());
                 }
                 reservationRepository.saveAllAndFlush(listOfExpireReservation);
 

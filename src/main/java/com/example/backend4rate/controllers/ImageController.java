@@ -43,8 +43,8 @@ public class ImageController {
     public ResponseEntity<List<String>> getImageUrls(@PathVariable Integer idRestaurant) throws MalformedURLException {
         List<Resource> resources = imageService.getImages(idRestaurant);
         List<String> imageUrls = resources.stream()
-                .map(resource -> resource.getFilename()) // Assume filename is the URL or can be used to build URL
-                .map(filename -> pathToRestaurant + idRestaurant + "/" + filename) // Build URL
+                .map(resource -> resource.getFilename())
+                .map(filename -> pathToRestaurant + idRestaurant + "/" + filename)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(imageUrls);
     }
