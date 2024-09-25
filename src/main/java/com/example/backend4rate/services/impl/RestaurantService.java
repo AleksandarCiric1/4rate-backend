@@ -38,6 +38,7 @@ public class RestaurantService implements RestaurantServiceInterface {
     private final UserAccountRepository userAccountRepository;
     private final String subject = "4Rate Account";
     private final String body = "Your Account is blocked";
+    private final String blockRestaurantMessage = "Your Restaurant has been blocked. Please create new one.";
 
     public RestaurantService(RestaurantRepository restaurantRepository, ModelMapper modelMapper,
             ManagerRepository managerRepository, RestaurantPhoneRepository restaurantPhoneRepository,
@@ -67,12 +68,14 @@ public class RestaurantService implements RestaurantServiceInterface {
     @Override
     public boolean blockRestaurant(RestaurantBlock restaurantToBlock) throws NotFoundException {
         RestaurantEntity restaurantEntity = restaurantRepository.findById(restaurantToBlock.getId())
-                .orElseThrow(() -> new NotFoundException("Couldn't found restaurant!", RestaurantService.class.getName()));
+                .orElseThrow(
+                        () -> new NotFoundException("Couldn't found restaurant!", RestaurantService.class.getName()));
 
         ManagerEntity managerEntity = managerRepository.findByRestaurantId(restaurantEntity.getId());
         UserAccountEntity userAccountEntity = userAccountRepository.findById(managerEntity.getUserAccount().getId())
                 .orElseThrow(() -> new NotFoundException(RestaurantService.class.getName()));
-        emailService.sendEmail(userAccountEntity.getEmail(), subject, body);
+        emailService.sendEmail(userAccountEntity.getEmail(), subject,
+                blockRestaurantMessage + "\n Reason: " + restaurantToBlock.getDescription());
 
         restaurantEntity.setStatus("blocked");
         restaurantRepository.saveAndFlush(restaurantEntity);

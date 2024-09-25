@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ManagerDTO {
     private Integer id;
-    private UserAccount userAccount;
+    private User userAccount;
 }

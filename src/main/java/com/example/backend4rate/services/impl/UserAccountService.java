@@ -1,11 +1,12 @@
 package com.example.backend4rate.services.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Date;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,10 @@ import com.example.backend4rate.models.entities.AdministratorEntity;
 import com.example.backend4rate.models.entities.GuestEntity;
 import com.example.backend4rate.models.entities.ManagerEntity;
 import com.example.backend4rate.models.entities.UserAccountEntity;
-import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.repositories.AdministratorRepository;
 import com.example.backend4rate.repositories.GuestRepository;
 import com.example.backend4rate.repositories.ManagerRepository;
+import com.example.backend4rate.repositories.UserAccountRepository;
 import com.example.backend4rate.services.UserAccountServiceInterface;
 
 import jakarta.persistence.EntityManager;
@@ -44,8 +45,11 @@ public class UserAccountService implements UserAccountServiceInterface {
     private final EmailService emailService;
     private final String subject = "4Rate Account";
     private final String body = "Your Account is blocked";
+    private final String confirmBody = "Your Account is confirmed! You can now use our application.";
     @PersistenceContext
     private EntityManager entityManager;
+    @Value("${sudo.admin.username}")
+    private String sudoAdminUsername;
 
     public UserAccountService(ModelMapper modelMapper, UserAccountRepository userAccountRepository,
             ManagerRepository managerRepository,
@@ -107,7 +111,8 @@ public class UserAccountService implements UserAccountServiceInterface {
     public UserAccountEntity confirmAccount(Integer id) throws NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
-
+        if (isSudoAdmin(userAccountEntity))
+            throw new RuntimeException("User account can not be modified!");
         if (userAccountEntity == null)
             throw new NotFoundException(UserAccountService.class.getName());
 
@@ -115,7 +120,7 @@ public class UserAccountService implements UserAccountServiceInterface {
             userAccountEntity.setConfirmed(true);
             userAccountRepository.save(userAccountEntity);
 
-            emailService.sendEmail(userAccountEntity.getEmail(), subject, body);
+            emailService.sendEmail(userAccountEntity.getEmail(), subject, confirmBody);
         }
         return userAccountEntity;
     }
@@ -128,10 +133,16 @@ public class UserAccountService implements UserAccountServiceInterface {
         return user;
     }
 
+    private boolean isSudoAdmin(UserAccountEntity userAccountEntity) {
+        return sudoAdminUsername.equals(userAccountEntity.getUsername());
+    }
+
     @Override
     public boolean blockUserAccount(Integer id) throws NotFoundException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        if (isSudoAdmin(userAccountEntity))
+            throw new RuntimeException("User account can not be modified!");
         userAccountEntity.setStatus("block");
         userAccountEntity = userAccountRepository.saveAndFlush(userAccountEntity);
         if (userAccountEntity.getStatus().equals("block"))
@@ -144,6 +155,8 @@ public class UserAccountService implements UserAccountServiceInterface {
     public boolean suspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        if (isSudoAdmin(userAccountEntity))
+            throw new RuntimeException("User account can not be modified!");
         if ("block".equals(userAccountEntity.getStatus())) {
             throw new BadRequestException(UserAccountService.class.getName());
         }
@@ -159,6 +172,8 @@ public class UserAccountService implements UserAccountServiceInterface {
     public boolean unsuspendUserAccount(Integer id) throws NotFoundException, BadRequestException {
         UserAccountEntity userAccountEntity = userAccountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(UserAccountService.class.getName()));
+        if (isSudoAdmin(userAccountEntity))
+            throw new RuntimeException("User account can not be modified!");
         if ("block".equals(userAccountEntity.getStatus())) {
             throw new BadRequestException(UserAccountService.class.getName());
         }
